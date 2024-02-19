@@ -1,9 +1,9 @@
-* {
+body {
 	background-color: blue;
 	font-size: 20px;
 	color: white;
 }
-.big-fat-rectangle {
+div {
 	height: 50px;
 	background-color: black;
 }
