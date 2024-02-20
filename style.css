@@ -37,10 +37,10 @@ body {
 	border: solid black 2px;
 	white-space: nowrap;
 	font-size: 0;
-	padding: 15px;
+	max-height: 90%;
 }
 .map-drag {
-	display: inline;
+	display: block;
 	position: relative;
 }
 .hex {
