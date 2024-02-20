@@ -1,19 +1,61 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="pl">
 
 <head>
     <meta charset="UTF-8">
-    <title>Game</title>
+    <title>Terra Game</title>
     <link rel="stylesheet" href="style.css" />
     <script src="index.js" defer></script>
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
+        body {
+        background-color: lightgray;
+        }
+        .container {
+        position: relative;
+        }
+        .title {
+        text-align: center;
+        font-size: 25px;
+        letter-spacing: 3px;
+        height: 50px;
+        border-bottom: black solid 2px;
+        background-color: #FFFF66;
+        }
+        .nav {
+        color: white;
+        width: 5%;
+        border-left: solid black 2px;
+        background-color: brown;
+        height: 100vh;        
+        }
+        .map {
+        width:95%;
+        height: 100vh;
+        position:relative;
+        top: 20px;
+        }
 
+
+
+    </style>
 </head>
 
 <body>
-    <span>I'm running out of things to type</span>
-    <p>I'm testing the commits</p>
-    <div> More testinggggg </div>
+    <div class="container">
+        <div class="title"><b>Terra Game</b></div>
+        <div class="map" style="float:left;">"Hexes"</div>
+        <div class="nav" style="float:left;">NAV BAR</div>
+        <div style="clear:both;"></div>
+
+
+
+    </div>
 </body>
 
 </html>
