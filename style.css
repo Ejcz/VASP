@@ -1,8 +1,56 @@
-body {
-	font-size: 20px;
-	color: white;
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
-div {
+body {
+	background-color: lightgray;
+}
+.title {
+	text-align: center;
+	font-size: 25px;
+	letter-spacing: 3px;
 	height: 50px;
-	background-color: black;
+	border-bottom: black solid 2px;
+	background-color: #ffff66;
+}
+.nav {
+	color: white;
+	width: 5%;
+	border-left: solid black 2px;
+	background-color: brown;
+	height: calc(100vh - 50px);
+}
+.map {
+	width: 95%;
+	height: calc(100vh - 50px);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	--s: 100px;
+	--m: 5px;
+}
+.map-supp {
+	overflow: hidden;
+	width: 90%;
+	padding: 15px;
+	border: solid black 2px;
+	white-space: nowrap;
+	font-size: 0;
+}
+.hex {
+	width: var(--s);
+	margin: var(--m);
+	height: calc(var(--s) * 1.1547);
+	display: inline-block;
+	font-size: initial;
+	clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+	background: red;
+	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
+	font-size: 30px;
+	text-align: center;
+}
+.hex-space {
+	width: calc(var(--s) * 0.5);
+	display: inline-block;
 }
