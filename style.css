@@ -33,11 +33,12 @@ body {
 }
 .map-supp {
 	overflow: hidden;
-	width: 90%;
 	border: solid black 2px;
 	white-space: nowrap;
 	font-size: 0;
+	aspect-ratio: 1;
 	max-height: 90%;
+	border-radius: 15px;
 }
 .map-drag {
 	display: block;
@@ -52,11 +53,12 @@ body {
 	background: #3366cb;
 	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
 	font-size: 30px;
+	font-weight: bold;
 	text-align: center;
 	transition-property: color, background;
 	transition-timing-function: ease-in-out;
 	transition-duration: 0.2s;
-	padding-top: 20px;
+	padding-top: 35px;
 }
 .hex:hover {
 	background: #1144a9;
