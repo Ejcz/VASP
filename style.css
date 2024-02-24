@@ -1,4 +1,6 @@
-* {
+*,
+*::after,
+*::before {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -9,39 +11,44 @@ body {
 }
 .title {
 	text-align: center;
-	font-size: 25px;
-	letter-spacing: 3px;
-	height: 50px;
-	border-bottom: black solid 2px;
+	font-size: 2rem;
+	height: 3rem;
+	border-bottom: black solid 0.15rem;
 	background-color: #ffff66;
+}
+.container {
+	display: flex;
+	height: calc(100vh - 3rem);
+	align-items: stretch;
 }
 .nav {
 	color: white;
-	width: 5%;
-	border-left: solid black 2px;
+	flex-basis: 5%;
+	border-left: solid black 0.15rem;
 	background-color: brown;
-	height: calc(100vh - 50px);
 }
 .map {
-	width: 95%;
-	height: calc(100vh - 50px);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	--s: 100px;
-	--m: 5px;
+	flex-basis: 95%;
+	position: relative;
+	--s: 10rem; /* hex width */
+	--m: 0.25rem; /*hex margin */
 }
 .map-supp {
 	overflow: hidden;
-	border: solid black 2px;
+	position: absolute;
+	border: solid black 0.15rem;
 	white-space: nowrap;
-	font-size: 0;
+	max-width: 90%;
+	width: calc(100vh - 6rem);
 	aspect-ratio: 1;
-	max-height: 90%;
-	border-radius: 15px;
+	border-radius: 1rem;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 .map-drag {
 	display: block;
+	font-size: 0;
 	position: relative;
 }
 .hex {
@@ -50,23 +57,41 @@ body {
 	height: calc(var(--s) * 1.1547);
 	display: inline-block;
 	clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-	background: #3366cb;
+	background: #3c4149;
 	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
-	font-size: 30px;
+	font-size: 2rem;
 	font-weight: bold;
 	text-align: center;
-	transition-property: color, background;
+	transition-property: color, background, transform;
 	transition-timing-function: ease-in-out;
 	transition-duration: 0.2s;
-	padding-top: 35px;
+	padding-top: 2rem;
+	position: relative;
 }
 .hex:hover {
-	background: #1144a9;
+	background: #4d525a;
 	cursor: pointer;
 	color: white;
+	transform: scale(0.9);
 }
 .hex-space {
 	width: calc(var(--s) * 0.5);
 	margin-right: var(--m);
 	display: inline-block;
+}
+.hex-border {
+	display: inline;
+	position: relative;
+}
+.pop-out-hex {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10;
+	background-color: #888;
+	height: 90%;
+	opacity: 98%;
+	aspect-ratio: 1.5;
+	display: none;
 }
