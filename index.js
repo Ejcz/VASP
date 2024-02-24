@@ -1,12 +1,18 @@
+// disabling right click
+
+document.addEventListener('contextmenu', (event) => {
+	event.preventDefault();
+});
+
 //onload hex generating:
 
-const hex_rows = 20;
-const hex_columns = 20;
+const hex_rows = 15;
+const hex_columns = 15;
 
 const mapa = document.querySelector('.map-drag');
 for (let i = 1; i <= hex_rows; i++) {
 	for (let j = 1; j <= hex_columns; j++) {
-		mapa.insertAdjacentHTML('beforeend', '<div class="hex">' + i + ',' + j + '</div>');
+		mapa.insertAdjacentHTML('beforeend', '<div class="hex-border"><div class="hex">' + i + ',' + j + '</div></div>');
 	}
 	mapa.insertAdjacentHTML('beforeend', '<br />');
 	if (i % 2 == 1) {
@@ -14,7 +20,7 @@ for (let i = 1; i <= hex_rows; i++) {
 	}
 }
 
-//map drag:
+//map dragging:
 
 const map_drag = document.querySelector('.map-drag');
 const map_supp = document.querySelector('.map-supp');
@@ -41,15 +47,19 @@ function onMouseDrag({ movementX, movementY }) {
 	let getStyle = window.getComputedStyle(map_drag);
 	let leftValue = parseInt(getStyle.left);
 	let topValue = parseInt(getStyle.top);
-	if (left_limit >= leftValue + movementX && leftValue + movementX >= right_limit) {
-		map_drag.style.left = `${leftValue + movementX}px`;
+	let outX = leftValue + movementX;
+	let outY = topValue + movementY;
+	if (left_limit >= outX && outX >= right_limit) {
+		map_drag.style.left = `${outX}px`;
 	}
-	if (top_limit >= topValue + movementY && topValue + movementY >= bottom_limit) {
-		map_drag.style.top = `${topValue + movementY}px`;
+	if (top_limit >= outY && outY >= bottom_limit) {
+		map_drag.style.top = `${outY}px`;
 	}
 }
-map_supp.addEventListener('mousedown', () => {
-	map_supp.addEventListener('mousemove', onMouseDrag);
+map_supp.addEventListener('mousedown', (ev) => {
+	if (ev.button == '2') {
+		map_supp.addEventListener('mousemove', onMouseDrag);
+	}
 });
 document.addEventListener('mouseup', () => {
 	map_supp.removeEventListener('mousemove', onMouseDrag);
