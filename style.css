@@ -40,22 +40,23 @@ body {
 }
 .container {
 	display: flex;
-	height: calc(100vh - 4.5rem);
+	height: calc(100vh - 7.5rem);
 	align-items: stretch;
 }
 .map {
-	flex-basis: 96%;
+	flex-basis: 92%;
 	position: relative;
-	--s: 10rem; /* hex width */
-	--m: 0.3rem; /*hex margin */
+	--s: 8.7rem; /* hex width */
+	--m: 0.2rem; /*hex margin */
 }
 .map-supp {
 	overflow: hidden;
 	position: absolute;
-	border: solid black 0.15rem;
+	box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.75);
+	border: solid rgb(41, 41, 41, 0.7) 0.12rem;
 	white-space: nowrap;
 	max-width: 90%;
-	width: calc(100vh - 6rem);
+	width: calc(100vh - 11rem);
 	aspect-ratio: 1;
 	border-radius: 1rem;
 	top: 50%;
@@ -108,12 +109,17 @@ body {
 	display: none;
 }
 .nav {
-	color: white;
 	flex-basis: 4%;
 	border-left: solid black 0.15rem;
-	background-color: brown;
+	border-right: solid black 0.15rem;
+	background-color: #ffb3c6;
 	transition: flex-basis ease-in-out 0.2s;
 }
 .nav:hover {
 	flex-basis: 20%;
+}
+.footer {
+	height: 3rem;
+	border-top: black solid 0.15rem;
+	background-color: #117711;
 }
