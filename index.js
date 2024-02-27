@@ -1,3 +1,25 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDdQmMGAQdo1cQuNdheThPoJI_L7ZsRsG4",
+  authDomain: "terra-web-game.firebaseapp.com",
+  projectId: "terra-web-game",
+  storageBucket: "terra-web-game.appspot.com",
+  messagingSenderId: "675854572141",
+  appId: "1:675854572141:web:651060965259561ebbfd64",
+  measurementId: "G-7MSF961YVM"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 //disabling right click
 
 document.addEventListener('contextmenu', (event) => {
