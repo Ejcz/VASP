@@ -8,6 +8,8 @@
 }
 body {
 	background-color: lightgray;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 300;
 }
 .header {
 	height: 4.5rem;
@@ -30,8 +32,6 @@ body {
 .turn-counter {
 	right: 10%;
 	font-size: 1.4rem;
-	font-family: 'Montserrat', sans-serif;
-	font-weight: 300;
 }
 .turn-counter span {
 	white-space: nowrap;
@@ -53,7 +53,6 @@ body {
 	overflow: hidden;
 	position: absolute;
 	box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.75);
-	border: solid rgb(41, 41, 41, 0.7) 0.12rem;
 	white-space: nowrap;
 	max-width: 90%;
 	width: calc(100vh - 11rem);
@@ -62,6 +61,7 @@ body {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	transition: all 0.1s ease-in-out;
 }
 .map-drag {
 	display: block;
@@ -74,7 +74,7 @@ body {
 	height: calc(var(--s) * 1.1547);
 	display: inline-block;
 	clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-	background: #3c4149;
+	background-color: #152623;
 	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
 	font-size: 2rem;
 	font-weight: bold;
@@ -86,7 +86,7 @@ body {
 	position: relative;
 }
 .hex:hover {
-	background: #4d525a;
+	background-color: #203834;
 	cursor: pointer;
 	color: white;
 	transform: scale(0.9);
@@ -96,20 +96,9 @@ body {
 	margin-right: var(--m);
 	display: inline-block;
 }
-.pop-out-hex {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 10;
-	background-color: #888;
-	height: 90%;
-	opacity: 98%;
-	aspect-ratio: 1.5;
-	display: none;
-}
 .nav {
 	flex-basis: 4%;
+	min-width: 3rem;
 	border-left: solid black 0.15rem;
 	border-right: solid black 0.15rem;
 	background-color: #ffb3c6;
@@ -122,4 +111,42 @@ body {
 	height: 3rem;
 	border-top: black solid 0.15rem;
 	background-color: #117711;
+}
+.pop-out-hex {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	z-index: 10;
+	background-color: #724129;
+	height: 95%;
+	aspect-ratio: 1.5;
+	transition: all 0.2s ease-in-out;
+	transition-delay: 0.05s;
+	border-radius: 2rem;
+	text-align: center;
+	font-weight: 500;
+}
+.pop-out-animation {
+	transform: translate(-50%, -50%) scale(1);
+}
+.map-animation {
+	box-shadow: none;
+	width: 0;
+	opacity: 0;
+}
+.close-button {
+	display: inline-block;
+	border: solid 0.1rem #eee;
+	border-radius: 1rem;
+	padding: 0.5rem 2rem;
+	margin: 0.7rem 0;
+	cursor: pointer;
+	background-color: rgb(139, 75, 61);
+	color: #eee;
+	transition: all 0.25s ease;
+	letter-spacing: 0.15rem;
+}
+.close-button:hover {
+	transform: scale(1.1);
 }
