@@ -14,7 +14,7 @@ var current_column = 0;
 
 const map_drag = document.querySelector('.map-drag');
 const map_supp = document.querySelector('.map-supp');
-const pop_out = document.querySelector('.pop-out-hex');
+const pop_out = document.querySelector('.pop-out');
 
 map_drag.insertAdjacentHTML('beforeend', '<div class="hex"></div>');
 
