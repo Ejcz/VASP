@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
@@ -14,4 +14,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
-const mapa = collection(database, 'map-info');
+const mapa = collection(database, 'MapEjcz');
+const terr = doc(database,'MapEjcz','terrarins');
+
+getDoc(mapa).then((e) => {
+	e.docs.forEach((f) => {
+			console.log(f.data());
+	})
+});
