@@ -118,13 +118,3 @@ document.querySelector('.close-button').addEventListener('click', (ev) => {
 		map_supp.classList.toggle('map-animation');
 	}
 });
-
-//map object (contains information) -- needs to be integrated with the databse (most probably FIREBASE)
-
-let mapa_info = {};
-for (let i = 0; i < hex_rows; i++) {
-	for (let j = 0; j < hex_columns; j++) {
-		mapa_info[i + '_' + j] = terrain_types[Math.floor(Math.random() * terrain_types.length)];
-	}
-}
-console.log(mapa_info);
