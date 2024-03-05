@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
@@ -17,8 +17,14 @@ const database = getFirestore(app);
 const mapa = collection(database, 'MapEjcz');
 const terr = doc(database,'MapEjcz','terrarins');
 
-getDoc(mapa).then((e) => {
+var rty;
+
+getDocs(mapa).then((e) => {
 	e.docs.forEach((f) => {
-			console.log(f.data());
-	})
+			rty = f.data().biomes;
+	});
 });
+let biome = ["grasslands", "forest"];
+
+
+await updateDoc(terr,{biomes: rty.concat([0,1,1,1,1,12,33,23],biome)});
