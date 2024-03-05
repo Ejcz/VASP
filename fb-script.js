@@ -19,10 +19,10 @@ const terr = doc(database,'MapEjcz','terrarins');
 
 getDocs(mapa).then((e) => {
 	e.docs.forEach((f) => {
-			var biomes = f.data().biomes;
+			var rty = f.data().biomes;
 	});
 });
 let biome = ["grasslands", "forest"];
 
 
-await updateDoc(terr,{'biomes': biomes.concat([0,1,1,1,1,12,33,23],biome)});
+await updateDoc(terr,{'biomes': rty.concat([0,1,1,1,1,12,33,23],biome)});
