@@ -13,3 +13,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
+
+const mapa = collection(database, 'MapEjcz');
+const terr = doc(database, 'MapEjcz', 'terrarins');
+
+var rty;
+
+getDocs(mapa).then((e) => {
+	e.docs.forEach((f) => {
+		rty = f.data().biomes;
+	});
+});
+let biome = ['grasslands', 'forest'];
+
+await updateDoc(terr, { biomes: rty.concat([0, 1, 1, 1, 1, 12, 33, 23], biome) });
