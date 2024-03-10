@@ -9,6 +9,16 @@ document.addEventListener('contextmenu', (event) => {
 const hex_rows = 15;
 const hex_columns = 15;
 
+const terrain_types = ["desert","forest","plains","jungle","mountains","ocean"]
+var terrain = []
+
+for (let i = 0; i<225; i++) {
+	let a = terrain_types[Math.floor(Math.random() * terrain_types.length)]
+	terrain.push(a);
+} 
+
+console.log(terrain)
+
 var current_row = 0;
 var current_column = 0;
 
@@ -27,7 +37,6 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-const terrain_types = ['desert', 'mountains', 'field'];
 
 //hex rendering function
 
@@ -37,7 +46,9 @@ function hex_gen(row, col) {
 		for (let j = 0; j < hex_wn; j++) {
 			let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
+			let nr = hex_columns*id_y+id_x;
+
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
