@@ -1,5 +1,6 @@
+//Firebase initialization
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, collection, doc, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
@@ -14,19 +15,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
-const map = collection(database, 'MapEjcz');
-const terr = doc(database,'MapEjcz', 'terrains');
-
-
-/*
-await setDoc(doc(map, "terrains"), {
-    biomes: terrain});
-*/
-
-
-
-	/*
-for (let i = 0; i<289; i++) {
-
-} */
-
+const map = collection(database, 'map');

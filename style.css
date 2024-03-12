@@ -96,6 +96,8 @@ body {
 	margin-right: var(--m);
 	display: inline-block;
 }
+/* Setting hex biomes properties */
+
 .desert {
 	background-color: #ffff66;
 }
@@ -113,6 +115,11 @@ body {
 }
 .ocean {
 	background-color: #5685eb;
+}
+/* setting up city hex properties */
+.city {
+	background-image: url(/images/city.png);
+	background-size: contain;
 }
 .nav {
 	flex-basis: 4%;
