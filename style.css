@@ -96,6 +96,31 @@ body {
 	margin-right: var(--m);
 	display: inline-block;
 }
+/* Setting hex biomes properties */
+
+.desert {
+	background-color: #ffff66;
+}
+.forest {
+	background-color: #499233;
+}
+.plains {
+	background-color: #2fd637;
+}
+.jungle {
+	background-color: #3e6718;
+}
+.mountains {
+	background-color: #555b5e;
+}
+.ocean {
+	background-color: #5685eb;
+}
+/* setting up city hex properties */
+.city {
+	background-image: url(/images/city.png);
+	background-size: contain;
+}
 .nav {
 	flex-basis: 4%;
 	min-width: 3rem;

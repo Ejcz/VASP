@@ -1,3 +1,26 @@
+// Firebase initialization
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
+import { getFirestore, collection, doc, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+
+const firebaseConfig = {
+	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
+	authDomain: 'terragame-e41cc.firebaseapp.com',
+	projectId: 'terragame-e41cc',
+	storageBucket: 'terragame-e41cc.appspot.com',
+	messagingSenderId: '469628303439',
+	appId: '1:469628303439:web:7406b5440d9dc77a85d23a',
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getFirestore(app);
+
+const map = collection(database, 'map');
+
+//importing biome data
+import { terrain } from "./biomes.js";
+
 //disabling right click
 
 document.addEventListener('contextmenu', (event) => {
@@ -27,7 +50,18 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-const terrain_types = ['desert', 'mountains', 'field'];
+//Live fetching city data
+
+const cityRef = doc(database, 'map', 'cities');
+
+let cityLocations = ['0_0',"3_3","3_4"];
+
+onSnapshot(cityRef, (doc) => {
+	cityLocations = doc.data().allCityLocations;
+	console.log(cityLocations);
+});
+
+console.log(cityLocations);
 
 //hex rendering function
 
@@ -37,7 +71,12 @@ function hex_gen(row, col) {
 		for (let j = 0; j < hex_wn; j++) {
 			let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
+			let nr = hex_columns*id_y+id_x;
+			let isCity = '';
+			if (cityLocations.includes(id_x + '_' + id_y)) {
+				isCity = " city"
+			} 
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -99,6 +138,7 @@ function onMouseDrag({ movementX, movementY }) {
 	} else {
 		map_drag.style.left = `${outX}px`;
 	}
+	console.log(current_column, current_row)
 }
 
 map_supp.addEventListener('mousedown', (ev) => {
