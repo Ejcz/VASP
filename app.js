@@ -27,8 +27,7 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-const terrain_types = ['desert', 'mountains', 'field'];
-
+const tt = ['desert', 'jungle', 'meadow', 'mountains', 'steppe', 'swamps'];
 //hex rendering function
 
 function hex_gen(row, col) {
