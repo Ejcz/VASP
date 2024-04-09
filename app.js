@@ -19,7 +19,7 @@ const database = getFirestore(app);
 const map = collection(database, 'map');
 
 //importing biome data
-import { terrain } from "./biomes.js";
+import { terrain } from './biomes.js';
 
 //disabling right click
 
@@ -37,7 +37,7 @@ var current_column = 0;
 
 const map_drag = document.querySelector('.map-drag');
 const map_supp = document.querySelector('.map-supp');
-const pop_out = document.querySelector('.pop-out-hex');
+const pop_out = document.querySelector('.pop-out');
 
 map_drag.insertAdjacentHTML('beforeend', '<div class="hex"></div>');
 
@@ -54,7 +54,7 @@ const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 
 
 const cityRef = doc(database, 'map', 'cities');
 
-let cityLocations = ['0_0',"3_3","3_4"];
+let cityLocations = ['0_0', '3_3', '3_4'];
 
 onSnapshot(cityRef, (doc) => {
 	cityLocations = doc.data().allCityLocations;
@@ -71,11 +71,11 @@ function hex_gen(row, col) {
 		for (let j = 0; j < hex_wn; j++) {
 			let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
-			let nr = hex_columns*id_y+id_x;
+			let nr = hex_columns * id_y + id_x;
 			let isCity = '';
 			if (cityLocations.includes(id_x + '_' + id_y)) {
-				isCity = " city"
-			} 
+				isCity = ' city';
+			}
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
@@ -138,7 +138,7 @@ function onMouseDrag({ movementX, movementY }) {
 	} else {
 		map_drag.style.left = `${outX}px`;
 	}
-	console.log(current_column, current_row)
+	console.log(current_column, current_row);
 }
 
 map_supp.addEventListener('mousedown', (ev) => {
