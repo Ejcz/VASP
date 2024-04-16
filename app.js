@@ -1,7 +1,7 @@
 // Firebase initialization
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, collection, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
@@ -138,7 +138,6 @@ function onMouseDrag({ movementX, movementY }) {
 	} else {
 		map_drag.style.left = `${outX}px`;
 	}
-	console.log(current_column, current_row);
 }
 
 map_supp.addEventListener('mousedown', (ev) => {
