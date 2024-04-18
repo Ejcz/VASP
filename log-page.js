@@ -1,5 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -12,6 +13,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
+const database = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 
@@ -21,16 +23,29 @@ googleLoginButton.addEventListener('click', () => {
     signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
       // The signed-in user info.
-      const user = result.user;
+        const user = result.user;
       // IdP data available using getAdditionalUserInfo(result)
-      console.log(token)
+        setDoc(doc(database, "Users", user.uid), {
+            userdata: {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL
+            }
+        });
+        localStorage.setItem("user", user.uid);
+        document.getElementById("log-in").innerHTML = "YOU'RE ALREADY LOGGED IN";
+        window.location.href = "main-menu.html"
     }).catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      const email = error.customData.email;
       const credential = GoogleAuthProvider.credentialFromError(error);
     });
   })
+
+if (localStorage.getItem("user") != null) {
+  window.location.href = "main-menu.html"
+}

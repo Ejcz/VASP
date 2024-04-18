@@ -2,7 +2,6 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, collection, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -60,7 +59,7 @@ onSnapshot(cityRef, (doc) => {
 	cityLocations = doc.data().allCityLocations;
 	console.log(cityLocations);
 });
-
+alert(localStorage.getItem("user"));
 console.log(cityLocations);
 
 //hex rendering function

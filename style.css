@@ -143,7 +143,7 @@ body {
 }
 /* setting up city hex properties */
 .city {
-	background-image: url(/images/city.png);
+	background-image: url(images/city.png);
 	background-size: contain;
 }
 .nav {
@@ -235,4 +235,13 @@ body {
 }
 .log-btt:hover {
 	transform: scale(1.1);
+}
+
+.main-menu {
+	width: 35%;
+	border-radius: 1rem;
+	text-align: center;
+	height: 70%;
+	background-color: #4c7a73;
+	box-shadow: 5px 5px 25px 0px rgba(76, 122, 115, 1);
 }
