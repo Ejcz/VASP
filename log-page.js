@@ -18,7 +18,7 @@ const database = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 const googleLoginButton = document.getElementById('googleLoginButton');
-
+// localStorage.clear();
 googleLoginButton.addEventListener('click', () => {
     signInWithPopup(auth, provider)
     .then((result) => {
@@ -29,15 +29,14 @@ googleLoginButton.addEventListener('click', () => {
         const user = result.user;
       // IdP data available using getAdditionalUserInfo(result)
         setDoc(doc(database, "Users", user.uid), {
-            userdata: {
+            displayName: user.displayName,
+            userInfo: {
                 uid: user.uid,
                 email: user.email,
-                displayName: user.displayName,
                 photoURL: user.photoURL
             }
         });
         localStorage.setItem("user", user.uid);
-        document.getElementById("log-in").innerHTML = "YOU'RE ALREADY LOGGED IN";
         window.location.href = "main-menu.html"
     }).catch((error) => {
       const errorCode = error.code;
@@ -48,4 +47,4 @@ googleLoginButton.addEventListener('click', () => {
 
 if (localStorage.getItem("user") != null) {
   window.location.href = "main-menu.html"
-}
+} 

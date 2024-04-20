@@ -17,12 +17,36 @@
 </head>
 
 <body>
-    <div class="header">Terra Game</div>
+    <div class="header">
+        <div class="acc-icon" id="acc-icon"><!-- This will be the account icon--></div>
+        Terra Game
+    </div>
     <div class="container-2">
         <div class="main-menu" >
-            <button class="log-btt" >CREATE NEW GAME</button>
+            <button class="menu-btt" id="create-btt" >CREATE NEW GAME</button>
             <br><br>
             Your Games:
+        </div>
+        <div class="creation-menu" id="creation-menu">
+            <form class="create-form">
+                How would you like to call your new game? <br>
+                <input type="text" class="create-text" id="game-name" value=""><br><br>
+                How many people would you like in the game? <br>
+                <input type="radio" id="2people" value="2" name="people">
+                <label for="2people"> 2 </label>
+                <input type="radio" id="3people" value="3" name="people">
+                <label for="3people"> 3 </label>
+                <input type="radio" id="4people" value="4" name="people">
+                <label for="4people"> 4 </label><br><br>
+                How much time per turn would you like?<br>
+                <input type="text" class="create-text" id="turn-time" value=""> hours
+            </form>
+            <button class="menu-btt" id="create-submit-btt" >Submit</button>
+        </div>
+        <div class="creation-menu" id="invitation-menu"><br>
+            Who would you like to invite?<br>
+            <input type="text" class="create-text" id="invite-people"><br>
+            <button class="menu-btt" id="invite-btt" >Invite</button>
         </div>
     </div>
 </body>
