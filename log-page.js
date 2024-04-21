@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
-import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDocs, query, collection, where } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -18,24 +18,29 @@ const database = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 const googleLoginButton = document.getElementById('googleLoginButton');
-// localStorage.clear();
+localStorage.clear();
 googleLoginButton.addEventListener('click', () => {
     signInWithPopup(auth, provider)
-    .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
+    .then(async (result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
-      // The signed-in user info.
+        // The signed-in user info.
         const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-        setDoc(doc(database, "Users", user.uid), {
+        // IdP data available using getAdditionalUserInfo(result)
+        const isUser = await getDocs(query(collection(database, "Users"), where("displayName", "==", user.displayName)));
+        if (isUser._snapshot.docChanges.length != 1) {
+          setDoc(doc(database, "Users", user.uid), {
             displayName: user.displayName,
+            invitations: [],
             userInfo: {
                 uid: user.uid,
                 email: user.email,
                 photoURL: user.photoURL
-            }
-        });
+            },
+            games: []
+          });
+        }
         localStorage.setItem("user", user.uid);
         window.location.href = "main-menu.html"
     }).catch((error) => {

@@ -25,12 +25,14 @@
         <div class="main-menu" >
             <button class="menu-btt" id="create-btt" >CREATE NEW GAME</button>
             <br><br>
-            Your Games:
+            Your Games:<br>
+            <div id="your-games"></div>
         </div>
         <div class="creation-menu" id="creation-menu">
             <form class="create-form">
                 How would you like to call your new game? <br>
-                <input type="text" class="create-text" id="game-name" value=""><br><br>
+                <input type="text" class="create-text" id="game-name" value=""><br>
+                <div id="name-taken"> </div><br>
                 How many people would you like in the game? <br>
                 <input type="radio" id="2people" value="2" name="people">
                 <label for="2people"> 2 </label>
@@ -45,8 +47,13 @@
         </div>
         <div class="creation-menu" id="invitation-menu"><br>
             Who would you like to invite?<br>
-            <input type="text" class="create-text" id="invite-people"><br>
-            <button class="menu-btt" id="invite-btt" >Invite</button>
+            <form onkeydown= "return event.key != 'Enter';">
+                <input type="text" class="create-text" id="invite-people" value=""><br>
+            </form>
+            <button class="menu-btt" id="invite-btt" >Invite</button><br><br>
+            <div id="no-user"></div><br>
+            <div id="invited-text"></div><br>
+            <div id="invited"></div>
         </div>
     </div>
 </body>
