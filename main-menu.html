@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra Game</title>
+    <!-- JAVASCRIPT -->
+    <script src="main-menu.js" type="module" defer></script>
+    <!-- fonts section -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anta&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="acc-icon" id="acc-icon"><!-- This will be the account icon--></div>
+        Terra Game
+    </div>
+    <div class="container-2">
+        <div class="main-menu" >
+            <button class="menu-btt" id="create-btt" >CREATE NEW GAME</button>
+            <br><br>
+            Your Games:<br>
+            <div id="your-games"></div>
+        </div>
+        <div class="creation-menu" id="creation-menu">
+            <form class="create-form">
+                How would you like to call your new game? <br>
+                <input type="text" class="create-text" id="game-name" value=""><br>
+                <div id="name-taken"> </div><br>
+                How many people would you like in the game? <br>
+                <input type="radio" id="2people" value="2" name="people">
+                <label for="2people"> 2 </label>
+                <input type="radio" id="3people" value="3" name="people">
+                <label for="3people"> 3 </label>
+                <input type="radio" id="4people" value="4" name="people">
+                <label for="4people"> 4 </label><br><br>
+                How much time per turn would you like?<br>
+                <input type="text" class="create-text" id="turn-time" value=""> hours
+            </form>
+            <button class="menu-btt" id="create-submit-btt" >Submit</button>
+        </div>
+        <div class="creation-menu" id="invitation-menu"><br>
+            Who would you like to invite?<br>
+            <form onkeydown= "return event.key != 'Enter';">
+                <input type="text" class="create-text" id="invite-people" value=""><br>
+            </form>
+            <button class="menu-btt" id="invite-btt" >Invite</button><br><br>
+            <div id="no-user"></div><br>
+            <div id="invited-text"></div><br>
+            <div id="invited"></div>
+        </div>
+    </div>
+</body>
+
+</html>
