@@ -1,8 +1,7 @@
 // Firebase initialization
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
-import {} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { getFirestore, collection, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -16,6 +15,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
+// User id
+let user = localStorage.getItem("user");
+let gameName = localStorage.getItem("game");
+
+// Is user logged in? If not go to log in page.
+if (user == null) {
+	window.location.href = "log-page.html";
+}
+
+// Get user's data
+const userData = (await getDoc(doc(database, 'Users', user))).data();
+
+// Icon setting
+document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
+
+//sth
 const map = collection(database, 'map');
 
 //importing biome data
@@ -58,10 +73,7 @@ let cityLocations = ['0_0', '3_3', '3_4'];
 
 onSnapshot(cityRef, (doc) => {
 	cityLocations = doc.data().allCityLocations;
-	console.log(cityLocations);
 });
-
-console.log(cityLocations);
 
 //hex rendering function
 
@@ -138,7 +150,6 @@ function onMouseDrag({ movementX, movementY }) {
 	} else {
 		map_drag.style.left = `${outX}px`;
 	}
-	console.log(current_column, current_row);
 }
 
 map_supp.addEventListener('mousedown', (ev) => {
