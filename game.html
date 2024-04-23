@@ -6,20 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terra Game</title>
     <!-- JAVA SCRIPT -->
-    <script src="app.js" type="module" defer></script>
-    <script src="biomes.js" type="module" defer></script>
-    <!-- fonts section -->
+    <script src="./js/app.js" type="module" defer></script>
+    <script src="./js/biomes.js" type="module" defer></script>
+    <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anta&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/layout.css" />
 </head>
 
 <body>
     <div class="header">
-        <div class="acc-icon"><!-- This will be the account icon--></div>
+        <div class="hov-container">
+            <div class="acc-icon"></div>
+            <div class="acc-menu">
+                <div class="offset"></div>
+                <div class="flexbox">
+                    <button class="games" id="games-btt">G</button>
+                    <button class="log-out" id="log-out-btt">LO</button>
+                </div>
+            </div>
+        </div>
         Terra Game
         <div class="turn-counter">Time left:<span>24:00:00</span></div>
     </div>
