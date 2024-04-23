@@ -45,9 +45,7 @@
 	position: relative;
 }
 .hex:hover {
-	background-color: #203834;
 	cursor: pointer;
-	color: white;
 	transform: scale(0.9);
 }
 .hex-space {

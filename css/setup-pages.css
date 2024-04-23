@@ -11,6 +11,7 @@
 	height: calc(100vh - var(--hh));
 	align-items: center;
 	justify-content: center;
+	position: relative;
 }
 .log-btt {
 	display: inline-block;
@@ -106,6 +107,39 @@
 .game-btt:hover {
 	transform: scale(1.1);
 }
-.acc-menu {
-	width: 5rem;
+.inv-window {
+	position: absolute;
+	width: 15rem;
+	height: 27rem;
+	background-color: brown;
+	top: 50%;
+	transform: translate(-100%, -50%);
+	left: 0;
+	border-top-right-radius: 1rem;
+	border-bottom-right-radius: 1rem;
+	transition: all ease-in-out 0.2s;
+	text-align: center;
+	font-weight: 500;
+}
+.inv-window-animation {
+	transform: translate(0, -50%);
+}
+.inv-close-btt {
+	text-align: right;
+	padding-right: 1rem;
+	height: 8%;
+	padding-top: 0.5rem;
+}
+.inv-close-btt span {
+	cursor: pointer;
+	font-weight: 600;
+}
+.inv-close-btt span:hover {
+	text-shadow: 0px 0px 5px rgba(66, 68, 90, 0.6);
+}
+.inv-content {
+	display: flex;
+	height: 92%;
+	flex-direction: column;
+	justify-content: top;
 }

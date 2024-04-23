@@ -14,11 +14,11 @@ const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
 // User id
-let user = localStorage.getItem("user");
+let user = localStorage.getItem('user');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = "log-page.html";
+	window.location.href = 'log-page.html';
 }
 
 // Get user's data
@@ -28,40 +28,40 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
 // Adding user's games
-const yourGames = document.querySelector('#your-games')
-userData.games.forEach( (game) => {
-	yourGames.insertAdjacentHTML('beforeend', '<button class="game-btt" id=' + game + '>' + game + '</button><br>')
+const yourGames = document.querySelector('#your-games');
+userData.games.forEach((game) => {
+	yourGames.insertAdjacentHTML('beforeend', '<button class="game-btt" id=' + game + '>' + game + '</button><br>');
 	document.getElementById(game).addEventListener('click', () => {
-		localStorage.setItem("game", game);
-		window.location.href = "game.html"
-	})
-})
+		localStorage.setItem('game', game);
+		window.location.href = 'game.html';
+	});
+});
 
 // Intializing forms and buttons
 if (document.readyState !== 'loading') {
-    CreateButton();
+	CreateButton();
 	SubmitButton();
 	InviteButton();
 } else {
-    document.addEventListener('DOMContentLoaded', function () {
-        CreateButton();
+	document.addEventListener('DOMContentLoaded', function () {
+		CreateButton();
 		SubmitButton();
 		InviteButton();
-    });
+	});
 }
 
 function CreateButton() {
-	const createBtt = document.getElementById("create-btt");
+	const createBtt = document.getElementById('create-btt');
 	createBtt.addEventListener('click', () => {
-		document.querySelector("#creation-menu").style.display = "inline-block";
-	})
+		document.querySelector('#creation-menu').style.display = 'inline-block';
+	});
 }
 
 function SubmitButton() {
-	const submitBtt = document.getElementById("create-submit-btt");
+	const submitBtt = document.getElementById('create-submit-btt');
 	submitBtt.addEventListener('click', () => {
 		GetCreateForm();
-	})
+	});
 }
 
 let gameName;
@@ -72,66 +72,89 @@ async function GetCreateForm() {
 	gameName = document.querySelector('#game-name').value;
 	nrPeople = document.querySelector("[name='people']:checked").value;
 	turnTime = document.querySelector('#turn-time').value;
-	invitedText.innerHTML = 'Invited Users 0/' + (nrPeople-1) + ':';
-	const gameNames = await getDocs(query(collection(database, "Games"), where("gameName", "==", gameName)));
+	invitedText.innerHTML = 'Invited Users 0/' + (nrPeople - 1) + ':';
+	const gameNames = await getDocs(query(collection(database, 'Games'), where('gameName', '==', gameName)));
 	if (gameNames._snapshot.docChanges.length == 0) {
-		document.querySelector("#invitation-menu").style.display = "inline-block";
-		document.querySelector('#name-taken').innerHTML = " "
+		document.querySelector('#invitation-menu').style.display = 'inline-block';
+		document.querySelector('#name-taken').innerHTML = ' ';
 	} else {
-		document.querySelector('#name-taken').innerHTML = "Name is already taken"
+		document.querySelector('#name-taken').innerHTML = 'Name is already taken';
 	}
-
 }
 
 let invitedCount = 0;
 let invitedUsers = [];
 let invitedUserId;
-const noUser = document.querySelector("#no-user")
+const noUser = document.querySelector('#no-user');
 function InviteButton() {
-	const inviteBtt = document.querySelector('#invite-btt')
+	const inviteBtt = document.querySelector('#invite-btt');
 	inviteBtt.addEventListener('click', async () => {
 		let invite = document.querySelector('#invite-people').value;
-		const invitedUser = await getDocs(query(collection(database, "Users"), where("displayName", "==", invite)));
+		const invitedUser = await getDocs(query(collection(database, 'Users'), where('displayName', '==', invite)));
 		if (invitedUser._snapshot.docChanges.length == 1) {
-			invitedUser.forEach( (doc) => {
-				invitedUserId = doc.id
-				noUser.innerHTML = ""
+			invitedUser.forEach((doc) => {
+				invitedUserId = doc.id;
+				noUser.innerHTML = '';
 			});
 			if (invitedUserId != user) {
-				const sfDocRef = doc(database, "Users", invitedUserId);
+				const sfDocRef = doc(database, 'Users', invitedUserId);
 				try {
 					await runTransaction(database, async (transaction) => {
 						const sfDoc = await transaction.get(sfDocRef);
-						if (!sfDoc.data().invitations.some(e => e.gameName == gameName)) {
-							transaction.update(sfDocRef, {invitations: arrayUnion( {gameName: gameName, invitor: userData.displayName} )});
-							document.querySelector("#invited").insertAdjacentHTML('beforeend', invite + "<br>");
+						if (!sfDoc.data().invitations.some((e) => e.gameName == gameName)) {
+							transaction.update(sfDocRef, { invitations: arrayUnion({ gameName: gameName, invitor: userData.displayName }) });
+							document.querySelector('#invited').insertAdjacentHTML('beforeend', invite + '<br>');
 							invitedCount += 1;
-							invitedText.innerHTML = 'Invited Users ' + invitedCount + '/' + (nrPeople-1) + ':'
+							invitedText.innerHTML = 'Invited Users ' + invitedCount + '/' + (nrPeople - 1) + ':';
 							invitedUsers = invitedUsers.concat(invite);
 							if (invitedCount == nrPeople - 1) {
-								await updateDoc(doc(database, "Users", user), {
-									games: arrayUnion(gameName)
+								await updateDoc(doc(database, 'Users', user), {
+									games: arrayUnion(gameName),
 								});
-								await setDoc(doc(database, "Games", gameName), {
+								await setDoc(doc(database, 'Games', gameName), {
 									gameName: gameName,
 									started: false,
 									invitedUsers: invitedUsers,
-									players: [userData.displayName]
-								})
-								location.reload()
+									players: [userData.displayName],
+								});
+								location.reload();
 							}
 						} else {
-							noUser.innerHTML = "You've already invited this user<br>"
+							noUser.innerHTML = "You've already invited this user<br>";
 						}
 					});
 				} catch (e) {
 					console.error(e);
 				}
 			} else {
-				noUser.innerHTML = "You can't invite yourself ;("
+				noUser.innerHTML = "You can't invite yourself ;(";
 			}
 		} else {
-			noUser.innerHTML = "There is no such user"
+			noUser.innerHTML = 'There is no such user';
 		}
-	})
+	});
 }
+
+//Invitiations window close button
+document.querySelector('#inv-close-btt').addEventListener('click', (ev) => {
+	document.querySelector('.inv-window').classList.remove('inv-window-animation');
+});
+
+//Account menu buttons functions
+document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
+	window.location.href = 'log-page.html';
+	localStorage.clear();
+});
+document.querySelector('#inv-btt').addEventListener('click', (ev) => {
+	document.querySelector('.inv-window').classList.add('inv-window-animation');
+	let invitations = userData.invitations;
+	console.log(invitations);
+	if (invitations.length == 0) {
+		document.querySelector('.inv-content').innerHTML = 'No pending invitations :(';
+	} else {
+		invitations.forEach((inv) => {
+			let content = '<div class="invitation">' + inv.gameName + ' | ' + inv.invitor + '</div>';
+			document.querySelector('.inv-content').insertAdjacentHTML('beforeend', content);
+		});
+	}
+});

@@ -164,3 +164,7 @@ document.querySelector('.close-button').addEventListener('click', (ev) => {
 document.querySelector('#games-btt').addEventListener('click', (ev) => {
 	window.location.href = 'main-menu.html';
 });
+document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
+	window.location.href = 'log-page.html';
+	localStorage.clear();
+});
