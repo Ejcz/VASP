@@ -1,0 +1,111 @@
+.log-in {
+	width: 35%;
+	border-radius: 1rem;
+	text-align: center;
+	height: 70%;
+	background-color: #4c7a73;
+	box-shadow: 5px 5px 25px 0px rgba(76, 122, 115, 1);
+}
+.container-2 {
+	display: flex;
+	height: calc(100vh - var(--hh));
+	align-items: center;
+	justify-content: center;
+}
+.log-btt {
+	display: inline-block;
+	border: none;
+	margin-top: 6rem;
+	background-color: #2c2c26;
+	width: 50%;
+	font-size: 1.15rem;
+	line-height: 1.8rem;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	padding: 0.5rem 0;
+	border-radius: 0.8rem;
+	cursor: pointer;
+	transition: transform 0.2s ease-out;
+	color: #ddd;
+}
+.log-btt:focus {
+	outline: none;
+}
+.log-btt:hover {
+	transform: scale(1.1);
+}
+
+.main-menu {
+	width: 35%;
+	border-radius: 1rem;
+	text-align: center;
+	height: 70%;
+	background-color: #4c7a73;
+	box-shadow: 5px 5px 25px 0px rgba(76, 122, 115, 1);
+	margin: 0.5%;
+}
+.menu-btt {
+	display: inline-block;
+	border: none;
+	margin-top: 6rem;
+	background-color: #2c2c26;
+	width: 50%;
+	font-size: 1.15rem;
+	line-height: 1.8rem;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	padding: 0.5rem 0;
+	border-radius: 0.8rem;
+	cursor: pointer;
+	transition: transform 0.2s ease-out;
+	color: #ddd;
+}
+.menu-btt:focus {
+	outline: none;
+}
+.menu-btt:hover {
+	transform: scale(1.1);
+}
+.create-form {
+	margin-top: 5rem;
+}
+.create-text {
+	border: none;
+	border-bottom: 1px solid #0b1412;
+	background-color: transparent;
+}
+.creation-menu {
+	width: 35%;
+	border-radius: 1rem;
+	text-align: center;
+	height: 70%;
+	background-color: #4c7a73;
+	box-shadow: 5px 5px 25px 0px rgba(76, 122, 115, 1);
+	margin: 0.5%;
+	display: none;
+}
+.game-btt {
+	display: inline-block;
+	border: none;
+	margin: 2px;
+	background-color: #2c2c26;
+	width: 50%;
+	font-size: 1.15rem;
+	line-height: 1.8rem;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	padding: 0.5rem 0;
+	border-radius: 0.8rem;
+	cursor: pointer;
+	transition: transform 0.2s ease-out;
+	color: #ddd;
+}
+.game-btt:focus {
+	outline: none;
+}
+.game-btt:hover {
+	transform: scale(1.1);
+}
+.acc-menu {
+	width: 5rem;
+}

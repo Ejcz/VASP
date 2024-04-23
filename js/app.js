@@ -1,5 +1,4 @@
 // Firebase initialization
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, collection, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
@@ -16,12 +15,12 @@ const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
 // User id
-let user = localStorage.getItem("user");
-let gameName = localStorage.getItem("game");
+let user = localStorage.getItem('user');
+let gameName = localStorage.getItem('game');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = "log-page.html";
+	window.location.href = 'log-page.html';
 }
 
 // Get user's data
@@ -30,20 +29,15 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
-//sth
-const map = collection(database, 'map');
-
-//importing biome data
+//Importing biome data
 import { terrain } from './biomes.js';
 
-//disabling right click
-
+//Disabling right click
 document.addEventListener('contextmenu', (event) => {
 	event.preventDefault();
 });
 
-//global variables
-
+//Variables for map dragging
 const hex_rows = 15;
 const hex_columns = 15;
 
@@ -66,12 +60,9 @@ const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
 //Live fetching city data
-
 const cityRef = doc(database, 'map', 'cities');
-
 let cityLocations = ['0_0', '3_3', '3_4'];
-
-onSnapshot(cityRef, (doc) => {
+getDoc(cityRef).then((doc) => {
 	cityLocations = doc.data().allCityLocations;
 });
 
@@ -95,7 +86,7 @@ function hex_gen(row, col) {
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex-space"></div>');
 		}
 	}
-	//hex clicking callout
+	//Hex clicking callout
 	document.querySelectorAll('.hex').forEach((ev) => {
 		ev.addEventListener('click', (button) => {
 			if (button.button == 0) {
@@ -105,21 +96,20 @@ function hex_gen(row, col) {
 	});
 }
 
+//Generating map in the beggining
 hex_gen(current_row, current_column);
 
 map_drag.style.top = `${-2 * hex_height - 4 * hex_margin}px`;
 map_drag.style.left = `${-2 * hex_height - 4 * hex_margin}px`;
 
-//hex clicking function
-
+//Hex clicking function
 function hex_clicked(hex_id) {
 	pop_out.classList.toggle('pop-out-animation');
 	map_supp.classList.toggle('map-animation');
 	pop_out.insertAdjacentHTML('beforeend', '<br />ID: ' + hex_id);
 }
 
-//map dragging:
-
+//Map dragging:
 function onMouseDrag({ movementX, movementY }) {
 	let getStyle = window.getComputedStyle(map_drag);
 	let leftValue = parseInt(getStyle.left);
@@ -152,6 +142,7 @@ function onMouseDrag({ movementX, movementY }) {
 	}
 }
 
+//Map drag function bind
 map_supp.addEventListener('mousedown', (ev) => {
 	if (ev.button == '2') {
 		map_supp.addEventListener('mousemove', onMouseDrag);
@@ -161,11 +152,15 @@ document.addEventListener('mouseup', () => {
 	map_supp.removeEventListener('mousemove', onMouseDrag);
 });
 
-//pop out interaction
-
+//Pop out interaction
 document.querySelector('.close-button').addEventListener('click', (ev) => {
 	if (ev.button == 0) {
 		pop_out.classList.toggle('pop-out-animation');
 		map_supp.classList.toggle('map-animation');
 	}
+});
+
+//Account menu buttons functions
+document.querySelector('#games-btt').addEventListener('click', (ev) => {
+	window.location.href = 'main-menu.html';
 });

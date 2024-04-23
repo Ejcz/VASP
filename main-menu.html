@@ -6,24 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terra Game</title>
     <!-- JAVASCRIPT -->
-    <script src="main-menu.js" type="module" defer></script>
+    <script src="js/main-menu.js" type="module" defer></script>
     <!-- fonts section -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anta&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/setup-pages.css" />
+
 </head>
 
 <body>
     <div class="header">
-        <div class="acc-icon" id="acc-icon"><!-- This will be the account icon--></div>
+        <div class="hov-container">
+            <div class="acc-icon"></div>
+            <div class="acc-menu">
+                <div class="offset"></div>
+                <div class="flexbox">
+                    <button class="log-out" id="log-out-btt">LO</button>
+                </div>
+            </div>
+        </div>
         Terra Game
     </div>
     <div class="container-2">
-        <div class="main-menu" >
-            <button class="menu-btt" id="create-btt" >CREATE NEW GAME</button>
+        <div class="main-menu">
+            <button class="menu-btt" id="create-btt">CREATE NEW GAME</button>
             <br><br>
             Your Games:<br>
             <div id="your-games"></div>
@@ -43,14 +54,14 @@
                 How much time per turn would you like?<br>
                 <input type="text" class="create-text" id="turn-time" value=""> hours
             </form>
-            <button class="menu-btt" id="create-submit-btt" >Submit</button>
+            <button class="menu-btt" id="create-submit-btt">Submit</button>
         </div>
         <div class="creation-menu" id="invitation-menu"><br>
             Who would you like to invite?<br>
-            <form onkeydown= "return event.key != 'Enter';">
+            <form onkeydown="return event.key != 'Enter';">
                 <input type="text" class="create-text" id="invite-people" value=""><br>
             </form>
-            <button class="menu-btt" id="invite-btt" >Invite</button><br><br>
+            <button class="menu-btt" id="invite-btt">Invite</button><br><br>
             <div id="no-user"></div><br>
             <div id="invited-text"></div><br>
             <div id="invited"></div>
