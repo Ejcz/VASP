@@ -128,7 +128,7 @@ function InviteButton() {
 					console.error(e);
 				}
 			} else {
-				noUser.innerHTML = "You can't invite yourself ;("
+				noUser.innerHTML = "You can't invite yourself ;( Make some friends"
 			}
 		} else {
 			noUser.innerHTML = "There is no such user"
