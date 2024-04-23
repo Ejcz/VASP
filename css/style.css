@@ -1,0 +1,131 @@
+.container-1 {
+	display: flex;
+	height: calc(100vh - var(--fh) - var(--hh));
+	align-items: stretch;
+}
+/* Map section */
+.map {
+	flex-basis: 92%;
+	position: relative;
+}
+.map-supp {
+	overflow: hidden;
+	position: absolute;
+	box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.75);
+	white-space: nowrap;
+	max-width: 90%;
+	width: calc(100vh - 3.5rem - var(--hh) - var(--fh));
+	aspect-ratio: 1;
+	border-radius: 1rem;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transition: all 0.1s ease-in-out;
+}
+.map-drag {
+	display: block;
+	font-size: 0;
+	position: relative;
+}
+.hex {
+	width: var(--s);
+	margin: var(--m);
+	height: calc(var(--s) * 1.1547);
+	display: inline-block;
+	clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+	background-color: #152623;
+	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
+	font-size: 2rem;
+	font-weight: bold;
+	text-align: center;
+	transition-property: color, background, transform;
+	transition-timing-function: ease-in-out;
+	transition-duration: 0.2s;
+	padding-top: 2rem;
+	position: relative;
+}
+.hex:hover {
+	background-color: #203834;
+	cursor: pointer;
+	color: white;
+	transform: scale(0.9);
+}
+.hex-space {
+	width: calc(var(--s) * 0.5);
+	margin-right: var(--m);
+	display: inline-block;
+}
+/* Setting hex biomes properties */
+.desert {
+	background-color: #ffff66;
+}
+.forest {
+	background-color: #499233;
+}
+.plains {
+	background-color: #2fd637;
+}
+.jungle {
+	background-color: #3e6718;
+}
+.mountains {
+	background-color: #555b5e;
+}
+.ocean {
+	background-color: #5685eb;
+}
+/* Setting up city hex properties */
+.city {
+	background-image: url(../images/city.png);
+	background-size: contain;
+}
+/* Navigation bars section */
+.nav {
+	flex-basis: 4%;
+	min-width: 3rem;
+	background-color: #4b4b41;
+}
+/* Footer section */
+.footer {
+	height: var(--fh);
+	background-color: #2c2c26;
+}
+/* Pop-out window section */
+.pop-out {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	z-index: 10;
+	background-color: #724129;
+	height: 95%;
+	aspect-ratio: 1.5;
+	transition: all 0.2s ease-in-out;
+	transition-delay: 0.05s;
+	border-radius: 2rem;
+	text-align: center;
+	font-weight: 500;
+}
+.pop-out-animation {
+	transform: translate(-50%, -50%) scale(1);
+}
+.map-animation {
+	box-shadow: none;
+	width: 0;
+	opacity: 0;
+}
+.close-button {
+	display: inline-block;
+	border: solid 0.1rem #eee;
+	border-radius: 1rem;
+	padding: 0.5rem 2rem;
+	margin: 0.7rem 0;
+	cursor: pointer;
+	background-color: rgb(139, 75, 61);
+	color: #eee;
+	transition: all 0.25s ease;
+	letter-spacing: 0.15rem;
+}
+.close-button:hover {
+	transform: scale(1.1);
+}
