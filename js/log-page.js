@@ -29,7 +29,7 @@ googleLoginButton.addEventListener('click', () => {
 			const user = result.user;
 			// IdP data available using getAdditionalUserInfo(result)
 			const isUser = await getDocs(query(collection(database, 'Users'), where('displayName', '==', user.displayName)));
-			if (isUser._snapshot.docChanges.length != 1) {
+			if (isUser.empty) {
 				setDoc(doc(database, 'Users', user.uid), {
 					displayName: user.displayName,
 					invitations: [],
@@ -41,7 +41,6 @@ googleLoginButton.addEventListener('click', () => {
 					games: [],
 				});
 			}
-
 			localStorage.setItem('user', user.uid);
 			window.location.href = 'main-menu.html';
 		})
