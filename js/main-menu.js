@@ -22,7 +22,7 @@ if (user == null) {
 }
 
 // Get user's data
-const userData = (await getDoc(doc(database, 'Users', user))).data();
+let userData = (await getDoc(doc(database, 'Users', user))).data();
 
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
@@ -30,7 +30,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 // Adding user's games
 const yourGames = document.querySelector('#your-games');
 userData.games.forEach((game) => {
-	yourGames.insertAdjacentHTML('beforeend', '<button class="game-btt" id=' + game + '>' + game + '</button><br>');
+	yourGames.insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
 	document.getElementById(game).addEventListener('click', () => {
 		localStorage.setItem('game', game);
 		window.location.href = 'game.html';
@@ -53,7 +53,7 @@ if (document.readyState !== 'loading') {
 function CreateButton() {
 	const createBtt = document.getElementById('create-btt');
 	createBtt.addEventListener('click', () => {
-		document.querySelector('#creation-menu').style.display = 'inline-block';
+		document.querySelector('#creation-menu').style.transform = 'translate(-50%,-50%) scaleY(1)';
 	});
 }
 
@@ -75,7 +75,7 @@ async function GetCreateForm() {
 	invitedText.innerHTML = 'Invited Users 0/' + (nrPeople - 1) + ':';
 	const gameNames = await getDocs(query(collection(database, 'Games'), where('gameName', '==', gameName)));
 	if (gameNames._snapshot.docChanges.length == 0) {
-		document.querySelector('#invitation-menu').style.display = 'inline-block';
+		document.querySelector('#invitation-menu').style.transform = 'translate(-50%,-50%) scaleY(1)';
 		document.querySelector('#name-taken').innerHTML = ' ';
 	} else {
 		document.querySelector('#name-taken').innerHTML = 'Name is already taken';
@@ -140,21 +140,86 @@ document.querySelector('#inv-close-btt').addEventListener('click', (ev) => {
 	document.querySelector('.inv-window').classList.remove('inv-window-animation');
 });
 
-//Account menu buttons functions
+//Account menu log-out button
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
 	window.location.href = 'log-page.html';
 	localStorage.clear();
 });
-document.querySelector('#inv-btt').addEventListener('click', (ev) => {
-	document.querySelector('.inv-window').classList.add('inv-window-animation');
-	let invitations = userData.invitations;
-	console.log(invitations);
-	if (invitations.length == 0) {
-		document.querySelector('.inv-content').innerHTML = 'No pending invitations :(';
+
+let invitations = userData.invitations;
+
+//Invitation accepted function
+async function InvitationDecision(index, option) {
+	let tempInvite = invitations[index];
+	let tempGames = userData.games;
+
+	let userReference = doc(database, 'Users', user);
+	let gameReference = doc(database, 'Games', tempInvite.gameName);
+
+	let gameData = (await getDoc(gameReference)).data();
+	let invited = gameData.invitedUsers;
+
+	invitations.splice(index, 1);
+	invited.splice(invited.indexOf(userData.displayName), 1);
+
+	//Updating databse
+	if (option == 1) {
+		await updateDoc(userReference, {
+			invitations: invitations,
+			games: [].concat(tempGames, tempInvite.gameName),
+		});
+
+		await updateDoc(gameReference, {
+			players: [].concat(gameData.players, userData.displayName),
+			invitedUsers: invited,
+			factionNotSelected: [].concat(gameData.factionNotSelected, userData.displayName),
+		});
 	} else {
-		invitations.forEach((inv) => {
-			let content = '<div class="invitation">' + inv.gameName + ' | ' + inv.invitor + '</div>';
-			document.querySelector('.inv-content').insertAdjacentHTML('beforeend', content);
+		await updateDoc(userReference, {
+			invitations: invitations,
+		});
+
+		await updateDoc(gameReference, {
+			invitedUsers: invited,
 		});
 	}
+
+	location.reload();
+}
+
+//Invitation window pop out and loading
+const inv_content = document.querySelector('.inv-content');
+const inv_options = document.querySelector('.inv-options');
+
+document.querySelector('#inv-btt').addEventListener('click', (ev) => {
+	document.querySelector('.inv-window').classList.add('inv-window-animation');
+	inv_content.innerHTML = '';
+	inv_options.innerHTML = '';
+
+	if (invitations.length != 0) {
+		invitations.forEach((inv) => {
+			//Adding invitations to HTML structure (called DOM btw)
+			let content1 = '<div class="invitation">' + inv.gameName + ' | ' + inv.invitor + '</div>';
+			let index = invitations.indexOf(inv);
+			let content2 = '<span class="inv-yes" id="y' + index + '">Y</span><span class="inv-no" id="n' + index + '">N</span>';
+			inv_content.insertAdjacentHTML('beforeend', content1);
+			inv_options.insertAdjacentHTML('beforeend', content2);
+
+			//Binding yes/no buttons for accepting/rejecting invites
+			document.getElementById('y' + index).addEventListener('click', (ev) => {
+				InvitationDecision(index, 1);
+			});
+			document.getElementById('n' + index).addEventListener('click', (ev) => {
+				InvitationDecision(index, 0);
+			});
+		});
+	}
+});
+
+//Home box closing buttons
+document.querySelector('#closing-button-1').addEventListener('click', (ev) => {
+	document.querySelector('#creation-menu').style.transform = 'translate(-50%,-50%) scaleY(0)';
+});
+document.querySelector('#closing-button-2').addEventListener('click', (ev) => {
+	document.querySelector('#invitation-menu').style.transform = 'translate(-50%,-50%) scaleY(0)';
 });
