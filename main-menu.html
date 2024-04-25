@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terra Game</title>
+    <title>VASP</title>
     <!-- JAVASCRIPT -->
     <script src="js/main-menu.js" type="module" defer></script>
     <!-- fonts section -->
@@ -31,22 +31,25 @@
                 </div>
             </div>
         </div>
-        Terra Game
+        VASP
     </div>
     <div class="container-2">
-        <div class="inv-window">
-            <div class="inv-close-btt"><span id="inv-close-btt">X</span></div>
-            <div class="inv-content">
 
-            </div>
+        <div class="inv-window">
+            <div class="inv-close-btt">INVITATIONS<span id="inv-close-btt">X</span></div>
+            <div class="inv-content"></div>
+            <div class="inv-options"></div>
+            <div style="clear:both;"></div>
         </div>
-        <div class="main-menu">
-            <button class="menu-btt" id="create-btt">CREATE NEW GAME</button>
+
+        <div class="home-box">
+            <button class="home-button" id="create-btt">CREATE NEW GAME</button>
             <br><br>
-            Your Games:<br>
+            <span>Your Games:</span><br>
             <div id="your-games"></div>
         </div>
-        <div class="creation-menu" id="creation-menu">
+        <div class="home-box" id="creation-menu">
+            <div class="home-back-button"><span id="closing-button-1">X</span></div>
             <form class="create-form">
                 How would you like to call your new game? <br>
                 <input type="text" class="create-text" id="game-name" value=""><br>
@@ -61,14 +64,15 @@
                 How much time per turn would you like?<br>
                 <input type="text" class="create-text" id="turn-time" value=""> hours
             </form>
-            <button class="menu-btt" id="create-submit-btt">Submit</button>
+            <button class="home-button" id="create-submit-btt">Submit</button>
         </div>
-        <div class="creation-menu" id="invitation-menu"><br>
-            Who would you like to invite?<br>
+        <div class="home-box" id="invitation-menu">
+            <div class="home-back-button"><span id="closing-button-2">X</span></div><br />
+            Who would you like to invite?<br />
             <form onkeydown="return event.key != 'Enter';">
                 <input type="text" class="create-text" id="invite-people" value=""><br>
             </form>
-            <button class="menu-btt" id="invite-btt">Invite</button><br><br>
+            <button class="home-button" id="invite-btt">Invite</button><br><br>
             <div id="no-user"></div><br>
             <div id="invited-text"></div><br>
             <div id="invited"></div>
