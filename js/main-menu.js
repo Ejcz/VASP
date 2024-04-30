@@ -28,9 +28,8 @@ let userData = (await getDoc(doc(database, 'Users', user))).data();
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
 // Adding user's games
-const yourGames = document.querySelector('#your-games');
 userData.games.forEach((game) => {
-	yourGames.insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
+	document.querySelector('#your-games').insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
 	document.getElementById(game).addEventListener('click', () => {
 		localStorage.setItem('game', game);
 		window.location.href = 'game.html';
@@ -127,7 +126,7 @@ function InviteButton() {
 					console.error(e);
 				}
 			} else {
-				noUser.innerHTML = "You can't invite yourself ;( Make some friends"
+				noUser.innerHTML = "You can't invite yourself ;( Make some friends";
 			}
 		} else {
 			noUser.innerHTML = 'There is no such user';
@@ -161,30 +160,33 @@ async function InvitationDecision(index, option) {
 
 	invitations.splice(index, 1);
 	invited.splice(invited.indexOf(userData.displayName), 1);
+	try {
+		//Updating databse
+		if (option == 1) {
+			await updateDoc(userReference, {
+				invitations: invitations,
+				games: [].concat(tempGames, tempInvite.gameName),
+			});
 
-	//Updating databse
-	if (option == 1) {
-		await updateDoc(userReference, {
-			invitations: invitations,
-			games: [].concat(tempGames, tempInvite.gameName),
-		});
+			await updateDoc(gameReference, {
+				players: [].concat(gameData.players, userData.displayName),
+				invitedUsers: invited,
+				factionNotSelected: [].concat(gameData.factionNotSelected, userData.displayName),
+			});
+		} else {
+			await updateDoc(userReference, {
+				invitations: invitations,
+			});
 
-		await updateDoc(gameReference, {
-			players: [].concat(gameData.players, userData.displayName),
-			invitedUsers: invited,
-			factionNotSelected: [].concat(gameData.factionNotSelected, userData.displayName),
-		});
-	} else {
-		await updateDoc(userReference, {
-			invitations: invitations,
-		});
+			await updateDoc(gameReference, {
+				invitedUsers: invited,
+			});
+		}
 
-		await updateDoc(gameReference, {
-			invitedUsers: invited,
-		});
+		location.reload();
+	} catch (e) {
+		console.log(e);
 	}
-
-	location.reload();
 }
 
 //Invitation window pop out and loading

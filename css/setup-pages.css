@@ -18,6 +18,8 @@
 .home-box > span {
 	background-color: white;
 	display: inline-block;
+	border: #174b63 solid 0.25rem;
+	box-sizing: content-box;
 	width: 8rem;
 	height: 2rem;
 	border-radius: 0.4rem;
