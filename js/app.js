@@ -14,6 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
+
 // User id
 let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
@@ -30,7 +31,7 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
 //Importing biome data
-import { terrain } from './biomes.js';
+import { terrain } from './consts.js';
 
 //Disabling right click
 document.addEventListener('contextmenu', (event) => {
