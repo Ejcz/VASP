@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -12,9 +12,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
-
-// Temporary
-localStorage.setItem("game", "bestgameever")
 
 // User id and game id
 let user = localStorage.getItem("user");
@@ -32,25 +29,81 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 //------------------------------------------------------------------------------------------------------------------
 
+// Faction descriptions
+import { factionDescriptions } from './consts.js';
+
 // Getting game invite data
 const gameRef = doc(database, "Games", gameName);
 const gameDoc = (await getDoc(gameRef)).data();
+
+// If game is started, go to game
+if (gameDoc.started == true) {
+	window.location.href = 'game.html';
+}
+
+// If all users have chosen a faction, go to game
+if (gameDoc.players.length == gameDoc.nrPlayers) {
+	await updateDoc(gameRef, {
+		started: true,
+		factionNotSelected: deleteField(),
+		factionsAvailable: deleteField(),
+		invitedUsers: deleteField()
+	})
+	window.location.href = 'game.html';
+}
 
 // Who accepted and who did not
 gameDoc.invitedUsers.forEach( (user) => {
     document.querySelector("#await").insertAdjacentHTML('beforeend', user + '<br>')
 })
 
-gameDoc.players.forEach( (user) => {
-    document.querySelector("#players").insertAdjacentHTML('beforeend', user + '<br>')
+gameDoc.factionNotSelected.forEach( (user) => {
+    document.querySelector("#not-selected").insertAdjacentHTML('beforeend', user + '<br>')
 })
 
-document.querySelector('.game-btt').addEventListener('click', () => {
-    console.log('yup')
+gameDoc.players.forEach( (player) => {
+    document.querySelector("#players").insertAdjacentHTML('beforeend', player.name + '<br>')
 })
-//Did user choose a faction? Button
 
-if (gameDoc.factionNotSelected.includes(user)) {
-    document.querySelector('#faction-select').style.display = "none"
+document.querySelector('#faction-select-btt').addEventListener('click', () => {
+	document.querySelector('#faction-select-menu').style.transform = 'translate(-50%,-50%) scaleY(1)';
+})
+
+// Adding buttons for factions
+let chosenFaction;
+gameDoc.factionsAvailable.forEach( (faction) => {
+	document.querySelector('#faction-select-menu').insertAdjacentHTML('beforeend', '<button class="home-button faction-btt" id="btt-' + faction + '">' + faction + '</button><br>')
+	document.querySelector('#btt-' + faction).addEventListener('click', () => {
+		chosenFaction = faction;
+		document.querySelector('#faction-description-box').style.transform = 'translate(-50%,-50%) scaleY(1)';
+		document.querySelector('#faction-description').innerHTML = factionDescriptions[faction]
+		document.querySelector('#faction-chosen').innerHTML = "Choose " + faction
+	})
+})
+
+// Faction chosen
+document.querySelector('#faction-chosen').addEventListener('click', async () => {
+	await updateDoc(gameRef, {
+		factionNotSelected: arrayRemove(userData.displayName),
+		factionsAvailable: arrayRemove(chosenFaction),
+		players: arrayUnion({
+			name: userData.displayName,
+			faction: chosenFaction
+		})
+	})
+	location.reload();
+})
+
+// Did user choose a faction? Button
+if (gameDoc.factionNotSelected.includes(userData.displayName)) {
+    document.querySelector('#faction-select-btt').style.display = "inline-block"
 }
+
+// Home box closing buttons
+document.querySelector('#closing-button-1').addEventListener('click', (ev) => {
+	document.querySelector('#faction-select-menu').style.transform = 'translate(-50%,-50%) scaleY(0)';
+});
+document.querySelector('#closing-button-2').addEventListener('click', (ev) => {
+	document.querySelector('#faction-description-box').style.transform = 'translate(-50%,-50%) scaleY(0)';
+});
 

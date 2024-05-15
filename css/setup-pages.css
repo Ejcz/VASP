@@ -54,14 +54,17 @@
 	transition: transform 0.2s ease-out;
 	color: #ddd;
 }
+.faction-btt {
+	margin-top: 1rem;
+}
 .home-button:focus {
 	outline: none;
 }
 .home-button:hover {
 	transform: scale(1.1);
 }
-#creation-menu,
-#invitation-menu {
+
+#creation-menu, #invitation-menu, #faction-select-menu, #faction-description-box {
 	transform: translate(-50%, -50%) scaleY(0);
 	transform-origin: top;
 	transition: transform ease-out 0.15s;

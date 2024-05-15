@@ -33,18 +33,29 @@
         Terra Game
     </div>
     <div class="container-2">
-        <div class="main-menu">
+        <div class="home-box">
             <div id="await">
-                <br><br><br>
+                <br><br>
                 Awaiting response from:<br>
+            </div>
+            <div id="not-selected">
+                <br>
+                Awaiting faction selection from:<br>
             </div>
             <div id="players">
                 <br>
                 Players:<br>
             </div>
-            <div id="faction-select"><br>
-                <button class="game-btt">Choose a faction</button>
-            </div>
+            <br>
+            <button class="home-button" id="faction-select-btt" style="display: none;">Choose a faction</button>
+        </div>
+        <div class="home-box" id="faction-select-menu">
+            <div class="home-back-button"><span id="closing-button-1">X</span></div>
+        </div>
+        <div class="home-box" id="faction-description-box">
+            <div class="home-back-button"><span id="closing-button-2">X</span></div>
+            <div id="faction-description"></div>
+            <button class="home-button" id="faction-chosen"></button>
         </div>
     </div>
 </body>
