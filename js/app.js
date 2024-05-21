@@ -14,6 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
+
 // User id
 let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
@@ -30,7 +31,7 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
 //Importing biome data
-import { terrain } from './biomes.js';
+import { terrain } from './consts.js';
 
 //Disabling right click
 document.addEventListener('contextmenu', (event) => {
@@ -70,6 +71,7 @@ function hex_gen(row, col) {
 			let nr = hex_columns * id_y + id_x;
 			let isCity = '';
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
+
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {

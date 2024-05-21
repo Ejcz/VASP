@@ -61,7 +61,8 @@
 	background-color: #499233;
 }
 .plains {
-	background-color: #2fd637;
+	background-image: url(../images/plains.png);
+	background-size: 75%;
 }
 .jungle {
 	background-color: #3e6718;

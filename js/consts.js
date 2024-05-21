@@ -23,4 +23,13 @@ for (let i = 0; i<225; i++) {
 	let a = terrain_types[Math.floor(Math.random() * terrain_types.length)]
 	terrain.push(a);
 } 
-export { terrain };
+
+const factionDescriptions = {
+    faction1: "lorem ipsum1",
+    faction2: "lorem ipsum2",
+    faction3: "lorem ipsum3",
+    faction4: "lorem ipsum4",
+    faction5: "lorem ipsum5",
+    faction6: "lorem ipsum6"
+};
+export { terrain, factionDescriptions };
