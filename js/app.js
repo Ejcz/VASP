@@ -60,13 +60,6 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-//Live fetching city data
-const cityRef = doc(database, 'map', 'cities');
-let cityLocations = ['0_0', '3_3', '3_4'];
-getDoc(cityRef).then((doc) => {
-	cityLocations = doc.data().allCityLocations;
-});
-
 //hex rendering function
 
 function hex_gen(row, col) {
@@ -77,10 +70,8 @@ function hex_gen(row, col) {
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
 			let nr = hex_columns * id_y + id_x;
 			let isCity = '';
-			if (cityLocations.includes(id_x + '_' + id_y)) {
-				isCity = ' city';
-			}
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
+
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {

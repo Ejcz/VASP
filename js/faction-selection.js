@@ -107,3 +107,11 @@ document.querySelector('#closing-button-2').addEventListener('click', (ev) => {
 	document.querySelector('#faction-description-box').style.transform = 'translate(-50%,-50%) scaleY(0)';
 });
 
+//Account menu buttons functions
+document.querySelector('#games-btt').addEventListener('click', (ev) => {
+	window.location.href = 'main-menu.html';
+});
+document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
+	window.location.href = 'log-page.html';
+	localStorage.clear();
+});
