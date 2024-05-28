@@ -1,6 +1,6 @@
 // Firebase initialization
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -13,7 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
-
 
 // User id
 let user = localStorage.getItem('user');
@@ -60,7 +59,7 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-//hex rendering function
+//Hex rendering function
 
 function hex_gen(row, col) {
 	map_drag.innerHTML = '';
@@ -71,7 +70,6 @@ function hex_gen(row, col) {
 			let nr = hex_columns * id_y + id_x;
 			let isCity = '';
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
-
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -159,4 +157,19 @@ document.querySelector('#games-btt').addEventListener('click', (ev) => {
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
 	window.location.href = 'log-page.html';
 	localStorage.clear();
+});
+
+//Resources statistics
+
+const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'GameInfo', 'Resources'), async (docSnap) => {
+	const players = (await getDoc(doc(database, 'Games', gameName))).data().players;
+	let playersT = [];
+	for (const k of players) {
+		playersT.push(k.name);
+	}
+	const playerNumer = playersT.indexOf(userData.displayName);
+	let resources = docSnap.data()['p' + playerNumer];
+	for (let r in resources) {
+		document.querySelector('.' + r + '-stat').innerHTML = resources[r];
+	}
 });

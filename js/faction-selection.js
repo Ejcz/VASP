@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -14,12 +14,12 @@ const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
 // User id and game id
-let user = localStorage.getItem("user");
+let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = "log-page.html";
+	window.location.href = 'log-page.html';
 }
 
 // Get user's data
@@ -33,7 +33,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 import { factionDescriptions } from './consts.js';
 
 // Getting game invite data
-const gameRef = doc(database, "Games", gameName);
+const gameRef = doc(database, 'Games', gameName);
 const gameDoc = (await getDoc(gameRef)).data();
 
 // If game is started, go to game
@@ -47,39 +47,58 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 		started: true,
 		factionNotSelected: deleteField(),
 		factionsAvailable: deleteField(),
-		invitedUsers: deleteField()
-	})
+		invitedUsers: deleteField(),
+	});
+	//Adding starting reasources
+	for (let i = 0; i < gameDoc.nrPlayers; i++) {
+		let player = 'p' + i;
+		await setDoc(
+			doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
+			{
+				[player]: {
+					cash: 0,
+					people: 0,
+					stone: 0,
+					wood: 0,
+					food: 0,
+					metals: 0,
+				},
+			},
+			{ merge: true }
+		);
+	}
+
 	window.location.href = 'game.html';
 }
 
 // Who accepted and who did not
-gameDoc.invitedUsers.forEach( (user) => {
-    document.querySelector("#await").insertAdjacentHTML('beforeend', user + '<br>')
-})
+gameDoc.invitedUsers.forEach((user) => {
+	document.querySelector('#await').insertAdjacentHTML('beforeend', user + '<br>');
+});
 
-gameDoc.factionNotSelected.forEach( (user) => {
-    document.querySelector("#not-selected").insertAdjacentHTML('beforeend', user + '<br>')
-})
+gameDoc.factionNotSelected.forEach((user) => {
+	document.querySelector('#not-selected').insertAdjacentHTML('beforeend', user + '<br>');
+});
 
-gameDoc.players.forEach( (player) => {
-    document.querySelector("#players").insertAdjacentHTML('beforeend', player.name + '<br>')
-})
+gameDoc.players.forEach((player) => {
+	document.querySelector('#players').insertAdjacentHTML('beforeend', player.name + '<br>');
+});
 
 document.querySelector('#faction-select-btt').addEventListener('click', () => {
 	document.querySelector('#faction-select-menu').style.transform = 'translate(-50%,-50%) scaleY(1)';
-})
+});
 
 // Adding buttons for factions
 let chosenFaction;
-gameDoc.factionsAvailable.forEach( (faction) => {
-	document.querySelector('#faction-select-menu').insertAdjacentHTML('beforeend', '<button class="home-button faction-btt" id="btt-' + faction + '">' + faction + '</button><br>')
+gameDoc.factionsAvailable.forEach((faction) => {
+	document.querySelector('#faction-select-menu').insertAdjacentHTML('beforeend', '<button class="home-button faction-btt" id="btt-' + faction + '">' + faction + '</button><br>');
 	document.querySelector('#btt-' + faction).addEventListener('click', () => {
 		chosenFaction = faction;
 		document.querySelector('#faction-description-box').style.transform = 'translate(-50%,-50%) scaleY(1)';
-		document.querySelector('#faction-description').innerHTML = factionDescriptions[faction]
-		document.querySelector('#faction-chosen').innerHTML = "Choose " + faction
-	})
-})
+		document.querySelector('#faction-description').innerHTML = factionDescriptions[faction];
+		document.querySelector('#faction-chosen').innerHTML = 'Choose ' + faction;
+	});
+});
 
 // Faction chosen
 document.querySelector('#faction-chosen').addEventListener('click', async () => {
@@ -88,15 +107,15 @@ document.querySelector('#faction-chosen').addEventListener('click', async () => 
 		factionsAvailable: arrayRemove(chosenFaction),
 		players: arrayUnion({
 			name: userData.displayName,
-			faction: chosenFaction
-		})
-	})
+			faction: chosenFaction,
+		}),
+	});
 	location.reload();
-})
+});
 
 // Did user choose a faction? Button
 if (gameDoc.factionNotSelected.includes(userData.displayName)) {
-    document.querySelector('#faction-select-btt').style.display = "inline-block"
+	document.querySelector('#faction-select-btt').style.display = 'inline-block';
 }
 
 // Home box closing buttons
