@@ -29,7 +29,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 
 // Adding user's games
 userData.games.forEach((game) => {
-	yourGames.insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
+	document.querySelector('#your-games').insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
 	document.getElementById(game).addEventListener('click', async () => {
 		localStorage.setItem('game', game);
 		let isStarted = (await getDoc(doc(database, "Games", game))).data().started;
@@ -119,7 +119,11 @@ function InviteButton() {
 									gameName: gameName,
 									started: false,
 									invitedUsers: invitedUsers,
-									players: [userData.displayName],
+									factionNotSelected: [userData.displayName],
+									players: [],
+									factionsAvailable: ["faction1", "faction2", "faction3", "faction4", "faction5", "faction6"],
+									nrPlayers: nrPeople,
+									turnTime: parseInt(turnTime)
 								});
 								location.reload();
 							}
@@ -174,7 +178,6 @@ async function InvitationDecision(index, option) {
 			});
 
 			await updateDoc(gameReference, {
-				players: [].concat(gameData.players, userData.displayName),
 				invitedUsers: invited,
 				factionNotSelected: [].concat(gameData.factionNotSelected, userData.displayName),
 			});

@@ -35,7 +35,7 @@
 	clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
 	background-color: #152623;
 	margin-bottom: calc(var(--m) - var(--s) * 0.2885);
-	font-size: 2rem;
+	font-size: 0;
 	font-weight: bold;
 	text-align: center;
 	transition-property: color, background, transform;
@@ -55,23 +55,30 @@
 }
 /* Setting hex biomes properties */
 .desert {
-	background-color: #ffff66;
+	background-image: url(../images/desert.png);
+	background-size: 60%;
 }
 .forest {
-	background-color: #499233;
+	background-image: url(../images/forest.png);
+	background-size: 80%;
+
 }
 .plains {
 	background-image: url(../images/plains.png);
 	background-size: 75%;
 }
 .jungle {
-	background-color: #3e6718;
+	background-image: url(../images/forest.png);
+	background-size: 80%;
+
 }
 .mountains {
-	background-color: #555b5e;
+	background-image: url(../images/mountains.png);
+	background-size: 60%;
+
 }
 .ocean {
-	background-color: #5685eb;
+	background-image: url(../images/ocean.png);
 }
 /* Setting up city hex properties */
 .city {
