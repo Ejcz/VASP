@@ -94,9 +94,18 @@ map_drag.style.left = `${-2 * hex_height - 4 * hex_margin}px`;
 
 //Hex clicking function
 function hex_clicked(hex_id) {
+	pop_out.classList.toggle('pop-out-transition');
 	pop_out.classList.toggle('pop-out-animation');
+	map_supp.classList.toggle('map-transition');
 	map_supp.classList.toggle('map-animation');
-	pop_out.insertAdjacentHTML('beforeend', '<br />ID: ' + hex_id);
+	document.querySelector('.footer').addEventListener('click', footer_clicked);
+}
+function footer_clicked() {
+	pop_out.classList.toggle('pop-out-transition');
+	pop_out.classList.toggle('pop-out-animation');
+	map_supp.classList.toggle('map-transition');
+	map_supp.classList.toggle('map-animation');
+	document.querySelector('.footer').removeEventListener('click', footer_clicked);
 }
 
 //Map dragging:
@@ -140,14 +149,6 @@ map_supp.addEventListener('mousedown', (ev) => {
 });
 document.addEventListener('mouseup', () => {
 	map_supp.removeEventListener('mousemove', onMouseDrag);
-});
-
-//Pop out interaction
-document.querySelector('.close-button').addEventListener('click', (ev) => {
-	if (ev.button == 0) {
-		pop_out.classList.toggle('pop-out-animation');
-		map_supp.classList.toggle('map-animation');
-	}
 });
 
 //Account menu buttons functions
