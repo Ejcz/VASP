@@ -98,14 +98,15 @@ function hex_clicked(hex_id) {
 	pop_out.classList.toggle('pop-out-animation');
 	map_supp.classList.toggle('map-transition');
 	map_supp.classList.toggle('map-animation');
-	document.querySelector('.footer').addEventListener('click', footer_clicked);
+	document.querySelector('#map-button').addEventListener('click', map_clicked);
+	document.querySelector('#map-button').classList.remove('nav-button-clicked');
 }
-function footer_clicked() {
+function map_clicked() {
 	pop_out.classList.toggle('pop-out-transition');
 	pop_out.classList.toggle('pop-out-animation');
 	map_supp.classList.toggle('map-transition');
 	map_supp.classList.toggle('map-animation');
-	document.querySelector('.footer').removeEventListener('click', footer_clicked);
+	document.querySelector('#map-button').removeEventListener('click', map_clicked);
 }
 
 //Map dragging:
@@ -173,4 +174,15 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'GameInfo'
 	for (let r in resources) {
 		document.querySelector('.' + r + '-stat').innerHTML = resources[r];
 	}
+});
+
+//Navigation bar buttons
+
+[].forEach.call(document.getElementsByClassName('nav-button'), function (element) {
+	element.addEventListener('click', (ev) => {
+		[].forEach.call(document.getElementsByClassName('nav-button'), function (element2) {
+			element2.classList.remove('nav-button-clicked');
+		});
+		element.classList.add('nav-button-clicked');
+	});
 });
