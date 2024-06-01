@@ -41,8 +41,12 @@ if (gameDoc.started == true) {
 	window.location.href = 'game.html';
 }
 
+// Map size
+import { hex_rows, hex_columns } from './consts.js';
+
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
+	//Starting game
 	await updateDoc(gameRef, {
 		started: true,
 		factionNotSelected: deleteField(),
@@ -67,7 +71,6 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 			{ merge: true }
 		);
 	}
-
 	window.location.href = 'game.html';
 }
 
