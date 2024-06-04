@@ -19,7 +19,7 @@ let gameName = localStorage.getItem('game');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 }
 
 // Get user's data
@@ -30,7 +30,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 //------------------------------------------------------------------------------------------------------------------
 
 // Faction descriptions
-import { factionDescriptions } from './consts.js';
+import { factionDescriptions } from './variables.js';
 
 // Getting game invite data
 const gameRef = doc(database, 'Games', gameName);
@@ -42,7 +42,6 @@ if (gameDoc.started == true) {
 }
 
 // Map size
-import { hex_rows, hex_columns } from './consts.js';
 import { biomes } from './biome-generation.js';
 
 // If all users have chosen a faction, go to game
@@ -143,6 +142,6 @@ document.querySelector('#games-btt').addEventListener('click', (ev) => {
 	window.location.href = 'main-menu.html';
 });
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 	localStorage.clear();
 });

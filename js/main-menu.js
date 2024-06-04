@@ -18,7 +18,7 @@ let user = localStorage.getItem('user');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 }
 
 // Get user's data
@@ -32,7 +32,7 @@ userData.games.forEach((game) => {
 	document.querySelector('#your-games').insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
 	document.getElementById(game).addEventListener('click', async () => {
 		localStorage.setItem('game', game);
-		let isStarted = (await getDoc(doc(database, "Games", game))).data().started;
+		let isStarted = (await getDoc(doc(database, 'Games', game))).data().started;
 		if (isStarted == true) {
 			window.location.href = 'game.html';
 		} else {
@@ -121,9 +121,9 @@ function InviteButton() {
 									invitedUsers: invitedUsers,
 									factionNotSelected: [userData.displayName],
 									players: [],
-									factionsAvailable: ["faction1", "faction2", "faction3", "faction4", "faction5", "faction6"],
+									factionsAvailable: ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6'],
 									nrPlayers: nrPeople,
-									turnTime: parseInt(turnTime)
+									turnTime: parseInt(turnTime),
 								});
 								location.reload();
 							}
@@ -150,7 +150,7 @@ document.querySelector('#inv-close-btt').addEventListener('click', (ev) => {
 
 //Account menu log-out button
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 	localStorage.clear();
 });
 
@@ -185,7 +185,6 @@ async function InvitationDecision(index, option) {
 			await updateDoc(userReference, {
 				invitations: invitations,
 			});
-
 
 			await updateDoc(gameReference, {
 				invitedUsers: invited,
