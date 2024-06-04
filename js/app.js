@@ -1,6 +1,6 @@
 // Firebase initialization
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, collection, doc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -13,7 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
-
 
 // User id
 let user = localStorage.getItem('user');
@@ -30,17 +29,24 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
-//Importing biome data
+// In-game player numer
+const players = (await getDoc(doc(database, 'Games', gameName))).data().players;
+let playersT = [];
+for (const k of players) {
+	playersT.push(k.name);
+}
+const playerNumer = playersT.indexOf(userData.displayName);
+
+// Importing biome data
 import { terrain } from './consts.js';
 
-//Disabling right click
+// Disabling right click
 document.addEventListener('contextmenu', (event) => {
 	event.preventDefault();
 });
 
-//Variables for map dragging
-const hex_rows = 15;
-const hex_columns = 15;
+// Variables for map dragging
+import { hex_rows, hex_columns } from './consts.js';
 
 var current_row = 0;
 var current_column = 0;
@@ -60,7 +66,18 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-//hex rendering function
+// Cities data
+
+const userCities = [];
+const Cities = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Cities'))).data();
+for (const city in Cities) {
+	if (Cities[city].owner == 'p' + playerNumer) {
+		userCities.push(Cities[city]);
+	}
+}
+const userCitiesLocations = userCities.map((el) => el.captialLocation);
+
+// Hex rendering function
 
 function hex_gen(row, col) {
 	map_drag.innerHTML = '';
@@ -68,17 +85,20 @@ function hex_gen(row, col) {
 		for (let j = 0; j < hex_wn; j++) {
 			let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
-			let nr = hex_columns * id_y + id_x;
-			let isCity = '';
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isCity + '" id="' + id_x + '_' + id_y + '">' + id_x + '_' + id_y + '</div>');
-
+			let nr = id_y + hex_columns * id_x;
+			if (userCitiesLocations.includes(nr)) {
+				var isUserCity = ' user_city';
+			} else {
+				var isUserCity = '';
+			}
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
 			map_drag.insertAdjacentHTML('beforeend', '<div class="hex-space"></div>');
 		}
 	}
-	//Hex clicking callout
+	// Hex clicking callout
 	document.querySelectorAll('.hex').forEach((ev) => {
 		ev.addEventListener('click', (button) => {
 			if (button.button == 0) {
@@ -88,20 +108,13 @@ function hex_gen(row, col) {
 	});
 }
 
-//Generating map in the beggining
+// Generating map in the beggining
 hex_gen(current_row, current_column);
 
 map_drag.style.top = `${-2 * hex_height - 4 * hex_margin}px`;
 map_drag.style.left = `${-2 * hex_height - 4 * hex_margin}px`;
 
-//Hex clicking function
-function hex_clicked(hex_id) {
-	pop_out.classList.toggle('pop-out-animation');
-	map_supp.classList.toggle('map-animation');
-	pop_out.insertAdjacentHTML('beforeend', '<br />ID: ' + hex_id);
-}
-
-//Map dragging:
+// Map dragging:
 function onMouseDrag({ movementX, movementY }) {
 	let getStyle = window.getComputedStyle(map_drag);
 	let leftValue = parseInt(getStyle.left);
@@ -134,7 +147,7 @@ function onMouseDrag({ movementX, movementY }) {
 	}
 }
 
-//Map drag function bind
+// Map drag function bind
 map_supp.addEventListener('mousedown', (ev) => {
 	if (ev.button == '2') {
 		map_supp.addEventListener('mousemove', onMouseDrag);
@@ -144,19 +157,75 @@ document.addEventListener('mouseup', () => {
 	map_supp.removeEventListener('mousemove', onMouseDrag);
 });
 
-//Pop out interaction
-document.querySelector('.close-button').addEventListener('click', (ev) => {
-	if (ev.button == 0) {
-		pop_out.classList.toggle('pop-out-animation');
-		map_supp.classList.toggle('map-animation');
-	}
-});
-
-//Account menu buttons functions
+// Account menu buttons functions
 document.querySelector('#games-btt').addEventListener('click', (ev) => {
 	window.location.href = 'main-menu.html';
 });
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
 	window.location.href = 'log-page.html';
 	localStorage.clear();
+});
+
+// Resources statistics
+
+const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'GameInfo', 'Resources'), async (docSnap) => {
+	let resources = docSnap.data()['p' + playerNumer];
+	for (let r in resources) {
+		document.querySelector('.' + r + '-stat').innerHTML = resources[r];
+	}
+});
+
+// Navigation bar buttons - animation
+const nav_ref = document.getElementsByClassName('nav-button');
+
+function clear_nav() {
+	[].forEach.call(nav_ref, function (element2) {
+		element2.classList.remove('nav-button-clicked');
+	});
+}
+
+[].forEach.call(nav_ref, function (element) {
+	element.addEventListener('click', (ev) => {
+		clear_nav();
+		element.classList.add('nav-button-clicked');
+	});
+});
+
+// Hex clicking function
+
+let hex_mark = 'map-view'; //The variable which determines what happens when you press a hex tile, by default "map-view" = open the details of the hex (e.g. city view)
+
+function hex_clicked(hex_id) {
+	switch (hex_mark) {
+		case 'map-view':
+			if (document.getElementById(hex_id).classList.contains('user_city')) {
+				pop_out_open();
+			}
+	}
+}
+
+//General pop-out functions
+
+function pop_out_open() {
+	clear_nav();
+	document.querySelector('#city-button').classList.add('nav-button-clicked');
+	pop_out.classList.toggle('pop-out-transition');
+	pop_out.classList.toggle('pop-out-animation');
+	map_supp.classList.toggle('map-transition');
+	map_supp.classList.toggle('map-animation');
+}
+
+function pop_out_close() {
+	pop_out.classList.toggle('pop-out-transition');
+	pop_out.classList.toggle('pop-out-animation');
+	map_supp.classList.toggle('map-transition');
+	map_supp.classList.toggle('map-animation');
+}
+
+//Nav bar map button clicked
+
+document.querySelector('#map-button').addEventListener('click', () => {
+	if (pop_out.classList.contains('pop-out-animation')) {
+		pop_out_close();
+	}
 });
