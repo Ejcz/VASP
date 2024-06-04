@@ -43,6 +43,7 @@ if (gameDoc.started == true) {
 
 // Map size
 import { hex_rows, hex_columns } from './consts.js';
+import { biomes } from './biome-generation.js';
 
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
@@ -71,6 +72,13 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 			{ merge: true }
 		);
 	}
+	await setDoc(
+		doc(database, 'Games', gameName, 'Map', 'Terrain'),
+		{
+			terrain: biomes
+		},
+		{ merge: true }
+	);
 	window.location.href = 'game.html';
 }
 
