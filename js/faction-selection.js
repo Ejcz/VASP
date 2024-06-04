@@ -72,10 +72,11 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 			{ merge: true }
 		);
 	}
+	//Adding map terrain, cities etc.
 	await setDoc(
 		doc(database, 'Games', gameName, 'Map', 'Terrain'),
 		{
-			terrain: biomes
+			terrain: biomes,
 		},
 		{ merge: true }
 	);
