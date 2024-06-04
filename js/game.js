@@ -20,7 +20,7 @@ let gameName = localStorage.getItem('game');
 
 // Is user logged in? If not go to log in page.
 if (user == null) {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 }
 
 // Get user's data
@@ -38,7 +38,7 @@ for (const k of players) {
 const playerNumer = playersT.indexOf(userData.displayName);
 
 // Importing biome data
-import { terrain } from './consts.js';
+const biomes = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Terrain'))).data().terrain;
 
 // Disabling right click
 document.addEventListener('contextmenu', (event) => {
@@ -46,7 +46,7 @@ document.addEventListener('contextmenu', (event) => {
 });
 
 // Variables for map dragging
-import { hex_rows, hex_columns } from './consts.js';
+import { hex_rows, hex_columns } from './variables.js';
 
 var current_row = 0;
 var current_column = 0;
@@ -91,7 +91,7 @@ function hex_gen(row, col) {
 			} else {
 				var isUserCity = '';
 			}
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + biomes[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -162,7 +162,7 @@ document.querySelector('#games-btt').addEventListener('click', (ev) => {
 	window.location.href = 'main-menu.html';
 });
 document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
-	window.location.href = 'log-page.html';
+	window.location.href = 'log-in.html';
 	localStorage.clear();
 });
 

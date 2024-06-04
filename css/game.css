@@ -76,12 +76,12 @@
 	background-size: 75%;
 }
 .jungle {
-	background-image: url(../images/forest.png);
-	background-size: 80%;
+	background-image: url(../images/swamp.png);
+	background-size: 100%;
 }
 .mountains {
 	background-image: url(../images/mountains.png);
-	background-size: 60%;
+	background-size: 100%;
 }
 .ocean {
 	background-image: url(../images/ocean.png);
