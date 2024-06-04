@@ -38,7 +38,7 @@ for (const k of players) {
 const playerNumer = playersT.indexOf(userData.displayName);
 
 // Importing biome data
-import { terrain } from './consts.js';
+const biomes = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Terrain'))).data().terrain;
 
 // Disabling right click
 document.addEventListener('contextmenu', (event) => {
@@ -91,7 +91,7 @@ function hex_gen(row, col) {
 			} else {
 				var isUserCity = '';
 			}
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + terrain[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + biomes[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
