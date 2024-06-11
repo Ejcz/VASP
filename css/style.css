@@ -87,7 +87,7 @@
 	background-image: url(../images/ocean.png);
 }
 /* Setting up city hex properties */
-.user_city::after {
+.user_city::after, .enemy_city::after{
 	background-image: url(../images/buildings.png);
 	background-color: #77777770;
 	background-size: 70%;
@@ -102,6 +102,10 @@
 	position: absolute;
 	top: 0;
 	left: 0;
+}
+
+.enemy_city::after{
+	background-image: url(../images/evil-buildings.png);
 }
 
 /* Navigation bars section */

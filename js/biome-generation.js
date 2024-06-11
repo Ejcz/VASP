@@ -100,5 +100,5 @@ for (let i = 0; i < 5; i++) {           // 4 times expanding the biomes with too
     })
 }
 
-export { biomes }
+export { biomes, biomePosition }
 

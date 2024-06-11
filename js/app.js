@@ -29,14 +29,13 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
-// In-game player numer
+// In-game player numer / Why though?
 const players = (await getDoc(doc(database, 'Games', gameName))).data().players;
 let playersT = [];
 for (const k of players) {
 	playersT.push(k.name);
 }
 const playerNumer = playersT.indexOf(userData.displayName);
-
 // Importing biome data
 const biomes = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Terrain'))).data().terrain;
 
@@ -69,14 +68,17 @@ const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 
 // Cities data
 
 const userCities = [];
+const enemyCities = [];
 const Cities = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Cities'))).data();
 for (const city in Cities) {
-	if (Cities[city].owner == 'p' + playerNumer) {
+	if (Cities[city].owner == userData.displayName) {
 		userCities.push(Cities[city]);
+	} else {
+		enemyCities.push(Cities[city])
 	}
 }
-const userCitiesLocations = userCities.map((el) => el.captialLocation);
-
+const userCitiesLocations = userCities.map((el) => el.location);
+const enemyCitiesLocations = enemyCities.map((el) => el.location);
 // Hex rendering function
 
 function hex_gen(row, col) {
@@ -91,7 +93,12 @@ function hex_gen(row, col) {
 			} else {
 				var isUserCity = '';
 			}
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + biomes[nr] + isUserCity + '" id="' + nr + '">' + nr + '</div>');
+			if (enemyCitiesLocations.includes(nr)) {
+				var isEnemyCity = ' enemy_city';
+			} else {
+				var isEnemyCity = '';
+			}
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + biomes[nr] + isUserCity + isEnemyCity +'" id="' + nr + '">' + nr + '</div>');
 		}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
