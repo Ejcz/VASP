@@ -122,7 +122,7 @@ function InviteButton() {
 									factionNotSelected: [userData.displayName],
 									players: [],
 									factionsAvailable: ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6'],
-									nrPlayers: nrPeople,
+									nrPlayers: parseInt(nrPeople),
 									turnTime: parseInt(turnTime),
 								});
 								location.reload();
