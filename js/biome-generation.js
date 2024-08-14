@@ -115,4 +115,4 @@ for (let i = 0; i < 5; i++) {
 	});
 }
 
-export { biomes };
+export { biomes, biomePosition};

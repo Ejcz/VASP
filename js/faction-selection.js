@@ -42,8 +42,17 @@ if (gameDoc.started == true) {
 }
 
 // Map size
-import { biomes } from './biome-generation.js';
+import { biomes, biomePosition } from './biome-generation.js';
+import { factionBiome } from './variables.js';
 
+// Player random city position on a faction biome
+let playerCity = {}
+gameDoc.players.forEach( (p) => {
+	let pBiome = factionBiome[p.faction]
+	let randPosition = biomePosition[pBiome][Math.floor(Math.random() * biomePosition[pBiome].length)]
+	Object.defineProperty(playerCity, p.name, {value: randPosition})
+
+})
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
 	//Starting game
@@ -54,8 +63,7 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 		invitedUsers: deleteField(),
 	});
 	//Adding starting reasources
-	for (let i = 0; i < gameDoc.nrPlayers; i++) {
-		let player = 'p' + i;
+	gameDoc.players.forEach(async (player) => {
 		await setDoc(
 			doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
 			{
@@ -70,7 +78,7 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 			},
 			{ merge: true }
 		);
-	}
+	})
 	//Adding map terrain, cities etc.
 	await setDoc(
 		doc(database, 'Games', gameName, 'Map', 'Terrain'),
@@ -79,7 +87,28 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 		},
 		{ merge: true }
 	);
-	window.location.href = 'game.html';
+	let ifDone = 0;
+	gameDoc.players.forEach( async (p) => {
+		let cityName = ('capital' + p.name)
+		ifDone = ifDone + 1;
+		console.log(cityName, p.name, playerCity[p.name])
+		await setDoc(
+			doc(database, 'Games', gameName, 'Map', 'Cities'),
+			{
+				[cityName]: {
+					owner: p.name,
+					location: playerCity[p.name]
+				}
+			},
+			{ merge: true }
+		);
+// If the forEach is done go to game
+		if (ifDone == gameDoc.nrPlayers) {
+			window.location.href = 'game.html';
+	
+		}
+	})
+
 }
 
 // Who accepted and who did not
