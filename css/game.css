@@ -86,6 +86,9 @@
 .ocean {
 	background-image: url(../images/ocean.png);
 }
+.unknown_hex {
+	background-color:#6d6d5f;
+}
 /* Setting up city hex properties */
 .user_city::after, .enemy_city::after{
 	background-image: url(../images/buildings.png);

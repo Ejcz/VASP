@@ -42,8 +42,10 @@ if (gameDoc.started == true) {
 }
 
 // Map size
-import { biomes, biomePosition } from './biome-generation.js';
-import { factionBiome } from './variables.js';
+import { biomes, biomePosition, nrHexes } from './biome-generation.js';
+import { factionBiome, hex_columns } from './variables.js';
+
+const nrColumns = hex_columns;
 
 // Player random city position on a faction biome
 let playerCity = {}
@@ -53,6 +55,33 @@ gameDoc.players.forEach( (p) => {
 	Object.defineProperty(playerCity, p.name, {value: randPosition})
 
 })
+function adjacent(pos) {
+	// Marking adjacent hexes to each biome hex
+	let adjacent = [];
+	let pos1 = pos - 1;
+	let pos2 = pos + 1;
+	let pos4 = pos - nrColumns;
+	let pos6 = pos + nrColumns;
+	let pos3;
+	let pos5;
+	if (Math.trunc(pos / nrColumns) % 2 == 0) {
+		// Checks whether the row is a bit to the left
+		pos3 = pos - nrColumns - 1;
+		pos5 = pos + nrColumns - 1;
+	} else {
+		pos3 = pos - nrColumns + 1;
+		pos5 = pos + nrColumns + 1;
+	}
+	if (pos < nrColumns) {
+		pos4 = nrHexes - nrColumns + pos
+		pos3 = pos4 - 1
+	} else if (pos > (nrHexes - nrColumns)) {
+		pos5 = pos - nrHexes + nrColumns
+		pos6 = pos5 + 1
+	}
+	adjacent.push(pos1, pos2, pos3, pos4, pos5, pos6);
+	return adjacent;
+}
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
 	//Starting game
@@ -62,12 +91,26 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 		factionsAvailable: deleteField(),
 		invitedUsers: deleteField(),
 	});
+	//Adding known hexes
+	gameDoc.players.forEach(async (player) => {
+		let adjacentHexes = adjacent(playerCity[player.name])
+		await setDoc(
+			doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'),
+			{
+				[player.name]: {
+					cityLocations: [playerCity[player.name]],
+					knownHexes: adjacentHexes.concat(playerCity[player.name])
+				},
+			},
+			{ merge: true }
+		);
+	})
 	//Adding starting reasources
 	gameDoc.players.forEach(async (player) => {
 		await setDoc(
 			doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
 			{
-				[player]: {
+				[player.name]: {
 					cash: 0,
 					people: 0,
 					stone: 0,
@@ -91,7 +134,6 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
 	gameDoc.players.forEach( async (p) => {
 		let cityName = ('capital' + p.name)
 		ifDone = ifDone + 1;
-		console.log(cityName, p.name, playerCity[p.name])
 		await setDoc(
 			doc(database, 'Games', gameName, 'Map', 'Cities'),
 			{

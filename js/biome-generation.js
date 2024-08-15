@@ -63,6 +63,13 @@ function expand(b, isEnough) {
 			pos3 = position - nrColumns + 1;
 			pos5 = position + nrColumns + 1;
 		}
+		if (position < nrColumns) {
+			pos4 = nrHexes - nrColumns + position
+			pos3 = pos4 - 1
+		} else if (position > (nrHexes - nrColumns)) {
+			pos5 = position - nrHexes + nrColumns
+			pos6 = pos5 + 1
+		}
 		adjacent.push(pos1, pos2, pos3, pos4, pos5, pos6);
 		adjacent.forEach((pos) => {
 			// Checks if one of the adjacent positions is the biome type that we want to expand, then filters it out.
@@ -115,4 +122,4 @@ for (let i = 0; i < 5; i++) {
 	});
 }
 
-export { biomes, biomePosition};
+export { biomes, biomePosition, nrHexes};

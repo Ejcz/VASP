@@ -78,8 +78,12 @@ for (const city in Cities) {
 		enemyCities.push(Cities[city])
 	}
 }
+
 const userCitiesLocations = userCities.map((el) => el.location);
 const enemyCitiesLocations = enemyCities.map((el) => el.location);
+
+// Known hexes data
+const knownHexes = (await getDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'))).data()[userData.displayName].knownHexes;
 
 // Hex rendering function
 
@@ -90,17 +94,24 @@ function hex_gen(row, col) {
 			let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
 			let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
 			let nr = id_y + hex_columns * id_x;
+			if (knownHexes.includes(nr)) {
+				var known = biomes[nr]
+				if (enemyCitiesLocations.includes(nr)) {
+					var isEnemyCity = ' enemy_city';
+				} else {
+					var isEnemyCity = '';
+				}
+			} else {
+				var known = ' unknown_hex'
+				var isEnemyCity = '';
+			}
 			if (userCitiesLocations.includes(nr)) {
 				var isUserCity = ' user_city';
 			} else {
 				var isUserCity = '';
 			}
-			if (enemyCitiesLocations.includes(nr)) {
-				var isEnemyCity = ' enemy_city';
-			} else {
-				var isEnemyCity = '';
-			}
-			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + biomes[nr] + isUserCity + isEnemyCity +'" id="' + nr + '">' + nr + '</div>');
+
+			map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isUserCity + isEnemyCity +'" id="' + nr + '">' + nr + '</div>');
 				}
 		map_drag.insertAdjacentHTML('beforeend', '<br />');
 		if (i % 2 == ((current_row % 2) + 2) % 2) {
