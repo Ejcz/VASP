@@ -323,6 +323,16 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             document.getElementById(clickedHexId).classList.add('user_city');
         }
     } else {
-        console.log('not enough resources');
+        const alert = document.querySelector('.alert-box');
+        alert.innerHTML = "You don't have enough resources to build a city";
+        alert.classList.add('alert-box-highlight');
+
+        setTimeout(() => {
+            alert.classList.remove('alert-box-highlight');
+            alert.classList.add('alert-box-normal');
+        }, 300);
+        setTimeout(() => {
+            alert.classList.remove('alert-box-normal');
+        }, 5000);
     }
 });
