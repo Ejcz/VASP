@@ -210,17 +210,42 @@
 	transition: all 0.2s ease-in-out;
 	transition-delay: 0.05s;
 	border-radius: 1.3rem;
-	text-align: center;
 	font-weight: 500;
 	border: #4d4d42 0.1rem solid;
 	box-shadow: 0px 0px 15px 5px rgba(36, 36, 36, 0.5);
+	justify-content: center;
 }
+
 .pop-out-animation {
 	transform: translate(-50%, -50%) scale(1);
 }
 .pop-out-transition {
 	transition: all 0.1s ease-in-out;
 	transition-delay: 0s;
+}
+/* Inside Pop-out window section */
+.city-grid {
+	justify-content: center;
+	margin: 2rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 15.66%);
+	gap: 0.5rem;
+}
+.city-building {
+	width: 100%;
+	aspect-ratio: 1;
+	background-color:#3e713055;
+	border-radius: 10%;
+	border: #1d1d1d 0.1rem solid;
+	box-shadow: 0px 0px 15px 1px rgba(36, 36, 36, 0.5);
+	transition: all ease-in-out 0.2s;
+}
+.city-building:hover {
+	background-color: #69ba5255;
+	border: #313131 0.1rem solid;
+}
+.city-building img {
+	height:100%;
 }
 /* Pop out for non city hexes */
 .noncity-popout {
