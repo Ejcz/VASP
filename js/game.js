@@ -270,6 +270,7 @@ nonCityPopout.addEventListener('click', (event) => {
     //If non city popout is clicked, doesn't hide it
     event.stopPropagation();
 });
+
 // Open pop out where a cursor is
 function noncity_pop_out_open(cursorX, cursorY) {
     nonCityPopout.style.left = `${cursorX}px`;
@@ -280,6 +281,8 @@ document.addEventListener('click', function () {
     // Hides non city popout when clicked anywhere
     nonCityPopout.style.display = 'none';
 });
+
+//Loader
 
 setTimeout(() => {
     document.querySelector('.loader-wheel').style.display = 'none';
