@@ -229,6 +229,9 @@ document.querySelector('#map-button').addEventListener('click', () => {
 		pop_out_close();
 	}
 });
+
+//Loader
+
 setTimeout(() => {
 	document.querySelector('.loader-wheel').style.display = 'none';
 }, 1000);
