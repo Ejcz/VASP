@@ -72,8 +72,10 @@ const userCities = [];
 const enemyCities = [];
 let userCitiesLocations;
 let enemyCitiesLocations;
+var cities;
 const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Cities'), async (docSnap) => {
-    let cities = docSnap.data();
+    cities = docSnap.data();
+    console.log(cities);
     for (const city in cities) {
         if (cities[city].owner == userData.displayName) {
             if (!userCities.includes(cities[city])) {
@@ -88,6 +90,7 @@ const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Citie
     userCitiesLocations = userCities.map((el) => el.location);
     enemyCitiesLocations = enemyCities.map((el) => el.location);
 });
+console.log(userCities);
 
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'))).data()[userData.displayName].knownHexes;
@@ -232,7 +235,7 @@ function hex_clicked(hex_id, cursorX, cursorY) {
     switch (hex_mark) {
         case 'map-view':
             if (document.getElementById(hex_id).classList.contains('user_city')) {
-                city_popout_open();
+                city_popout_open(hex_id);
             } else if (document.getElementById(hex_id).classList.contains('enemy_city')) {
             } else if (!document.getElementById(hex_id).classList.contains('unknown_hex')) {
                 noncity_pop_out_open(cursorX, cursorY);
@@ -242,7 +245,19 @@ function hex_clicked(hex_id, cursorX, cursorY) {
 
 //General pop-out functions
 
-function city_popout_open() {
+function city_popout_open(location) {
+    let city;
+    for (const c in cities) {
+        if (cities[c].location == location) {
+            city = cities[c];
+        }
+    }
+    for (const building in city.buildings) {
+        document.querySelector('.city-grid').insertAdjacentHTML('beforeend', '<div class="city-building" id="' + building + '">' + building + '</div>');
+        if (city.buildings[building] == 1) {
+            document.querySelector('#' + building).classList.add('city-building-built');
+        }
+    }
     clear_nav();
     document.querySelector('#city-button').classList.add('nav-button-clicked');
     pop_out.classList.toggle('pop-out-transition');
@@ -252,6 +267,7 @@ function city_popout_open() {
 }
 
 function city_popout_close() {
+    document.querySelector('.city-grid').innerHTML = '';
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
     map_supp.classList.toggle('map-transition');

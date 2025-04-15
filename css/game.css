@@ -232,6 +232,7 @@
 	gap: 0.5rem;
 }
 .city-building {
+	text-align: center;
 	width: 100%;
 	aspect-ratio: 1;
 	background-color:#3e713055;
@@ -240,9 +241,17 @@
 	box-shadow: 0px 0px 15px 1px rgba(36, 36, 36, 0.5);
 	transition: all ease-in-out 0.2s;
 }
-.city-building:hover {
+.city-building:not(.city-building-built):hover {
 	background-color: #69ba5255;
 	border: #313131 0.1rem solid;
+}
+
+.city-building-built {
+	background-color: #16291155;
+}
+.city-building-built:hover {
+	background-color: #35642955;
+
 }
 .city-building img {
 	height:100%;
