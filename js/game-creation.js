@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import { biomes, biomePosition, adjacent } from './biome-generation.js';
 import { factionBiome, hex_columns } from './variables.js';
 
@@ -44,6 +44,8 @@ export async function startGame(gameName) {
     //Starting game
     await updateDoc(gameRef, {
         started: true,
+        dateStarted: serverTimestamp(),
+        turnOfPlayer: gameDoc.players[Math.floor(Math.random() * gameDoc.nrPlayers)].name,
         factionNotSelected: deleteField(),
         factionsAvailable: deleteField(),
         invitedUsers: deleteField(),
@@ -62,7 +64,7 @@ export async function startGame(gameName) {
             { merge: true }
         );
     });
-    //Adding starting reasources
+    //Adding starting resources
     gameDoc.players.forEach(async (player) => {
         await setDoc(
             doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
