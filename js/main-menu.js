@@ -1,5 +1,18 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, query, collection, where, getDocs, updateDoc, arrayUnion, runTransaction, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    query,
+    collection,
+    where,
+    getDocs,
+    updateDoc,
+    arrayUnion,
+    runTransaction,
+    setDoc,
+    serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -89,6 +102,7 @@ async function GetCreateForm() {
 let invitedCount = 0;
 let invitedUsers = [];
 let invitedUserId;
+const today = new Date();
 const noUser = document.querySelector('#no-user');
 function InviteButton() {
     const inviteBtt = document.querySelector('#invite-btt');
@@ -123,6 +137,7 @@ function InviteButton() {
                                 await setDoc(doc(database, 'Games', gameName), {
                                     gameName: gameName,
                                     started: false,
+                                    dateStarted: serverTimestamp(),
                                     invitedUsers: invitedUsers,
                                     factionNotSelected: [userData.displayName],
                                     players: [],

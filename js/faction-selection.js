@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -58,7 +58,11 @@ gameDoc.players.forEach((p) => {
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
     //Starting game
+    const today = new Date();
+    console.log(Math.floor(Math.random() * gameDoc.nrPlayers));
     await updateDoc(gameRef, {
+        turnOfPlayer: gameDoc.players[Math.floor(Math.random() * gameDoc.nrPlayers)].name,
+        dateStarted: serverTimestamp(),
         started: true,
         factionNotSelected: deleteField(),
         factionsAvailable: deleteField(),
@@ -78,7 +82,7 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
             { merge: true }
         );
     });
-    //Adding starting reasources
+    //Adding starting resources
     gameDoc.players.forEach(async (player) => {
         await setDoc(
             doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
@@ -117,7 +121,7 @@ if (gameDoc.players.length == gameDoc.nrPlayers) {
             },
             { merge: true }
         );
-        // If the forEach is done go to game
+        // If the forEach is done, go to game
         if (ifDone == gameDoc.nrPlayers) {
             window.location.href = 'game.html';
         }
