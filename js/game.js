@@ -75,7 +75,6 @@ let enemyCitiesLocations;
 var cities;
 const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Cities'), async (docSnap) => {
     cities = docSnap.data();
-    console.log(cities);
     for (const city in cities) {
         if (cities[city].owner == userData.displayName) {
             if (!userCities.includes(cities[city])) {
@@ -90,7 +89,6 @@ const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Citie
     userCitiesLocations = userCities.map((el) => el.location);
     enemyCitiesLocations = enemyCities.map((el) => el.location);
 });
-console.log(userCities);
 
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'))).data()[userData.displayName].knownHexes;
