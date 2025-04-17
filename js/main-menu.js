@@ -85,6 +85,7 @@ let gameName;
 let nrPeople;
 let turnTime;
 const invitedText = document.querySelector('#invited-text');
+// Getting values from the createForm
 async function GetCreateForm() {
     gameName = document.querySelector('#game-name').value;
     nrPeople = document.querySelector("[name='people']:checked").value;
@@ -104,61 +105,60 @@ let invitedUsers = [];
 let invitedUserId;
 const today = new Date();
 const noUser = document.querySelector('#no-user');
+const userMessage = document.querySelector('#user-message');
+
+//Creating a game and inviting others function
 function InviteButton() {
-    const inviteBtt = document.querySelector('#invite-btt');
-    inviteBtt.addEventListener('click', async () => {
+    document.querySelector('#invite-btt').addEventListener('click', async () => {
         let invite = document.querySelector('#invite-people').value;
         const invitedUser = await getDocs(query(collection(database, 'Users'), where('displayName', '==', invite)));
         if (invitedUser._snapshot.docChanges.length == 1) {
             invitedUser.forEach((doc) => {
                 invitedUserId = doc.id;
-                noUser.innerHTML = '';
+                userMessage.innerHTML = '';
             });
             if (invitedUserId != user) {
                 const sfDocRef = doc(database, 'Users', invitedUserId);
                 try {
-                    await runTransaction(database, async (transaction) => {
-                        const sfDoc = await transaction.get(sfDocRef);
-                        if (!sfDoc.data().invitations.some((e) => e.gameName == gameName)) {
-                            transaction.update(sfDocRef, {
-                                invitations: arrayUnion({
-                                    gameName: gameName,
-                                    invitor: userData.displayName,
-                                }),
+                    const sfDoc = await getDoc(sfDocRef);
+                    if (!sfDoc.data().invitations.some((e) => e.gameName == gameName)) {
+                        await updateDoc(sfDocRef, {
+                            invitations: arrayUnion({
+                                gameName: gameName,
+                                invitor: userData.displayName,
+                            }),
+                        });
+                        document.querySelector('#invited').insertAdjacentHTML('beforeend', invite + '<br>');
+                        invitedCount += 1;
+                        invitedText.innerHTML = 'Invited Users ' + invitedCount + '/' + (nrPeople - 1) + ':';
+                        invitedUsers = invitedUsers.concat(invite);
+                        if (invitedCount == nrPeople - 1) {
+                            await updateDoc(doc(database, 'Users', user), {
+                                games: arrayUnion(gameName),
                             });
-                            document.querySelector('#invited').insertAdjacentHTML('beforeend', invite + '<br>');
-                            invitedCount += 1;
-                            invitedText.innerHTML = 'Invited Users ' + invitedCount + '/' + (nrPeople - 1) + ':';
-                            invitedUsers = invitedUsers.concat(invite);
-                            if (invitedCount == nrPeople - 1) {
-                                await updateDoc(doc(database, 'Users', user), {
-                                    games: arrayUnion(gameName),
-                                });
-                                await setDoc(doc(database, 'Games', gameName), {
-                                    gameName: gameName,
-                                    started: false,
-                                    dateStarted: serverTimestamp(),
-                                    invitedUsers: invitedUsers,
-                                    factionNotSelected: [userData.displayName],
-                                    players: [],
-                                    factionsAvailable: ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6'],
-                                    nrPlayers: parseInt(nrPeople),
-                                    turnTime: parseInt(turnTime),
-                                });
-                                location.reload();
-                            }
-                        } else {
-                            noUser.innerHTML = "You've already invited this user<br>";
+                            await setDoc(doc(database, 'Games', gameName), {
+                                gameName: gameName,
+                                started: false,
+                                dateStarted: serverTimestamp(),
+                                invitedUsers: invitedUsers,
+                                factionNotSelected: [userData.displayName],
+                                players: [],
+                                factionsAvailable: ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6'],
+                                nrPlayers: parseInt(nrPeople),
+                                turnTime: parseInt(turnTime),
+                            });
                         }
-                    });
+                    } else {
+                        userMessage.innerHTML = "You've already invited this user<br>";
+                    }
                 } catch (e) {
                     console.error(e);
                 }
             } else {
-                noUser.innerHTML = "You can't invite yourself ;( Make some friends";
+                userMessage.innerHTML = "You can't invite yourself ;( Make some friends";
             }
         } else {
-            noUser.innerHTML = 'There is no such user';
+            userMessage.innerHTML = 'There is no such user';
         }
     });
 }

@@ -32,7 +32,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 // Faction descriptions
 import { factionDescriptions } from './variables.js';
 
-// Getting game invite data
+// Getting game data
 const gameRef = doc(database, 'Games', gameName);
 const gameDoc = (await getDoc(gameRef)).data();
 
@@ -41,91 +41,11 @@ if (gameDoc.started == true) {
     window.location.href = 'game.html';
 }
 
-// Map size
-import { biomes, biomePosition, adjacent } from './biome-generation.js';
-import { factionBiome, hex_columns } from './variables.js';
-
-const nrColumns = hex_columns;
-
-// Player random city position on a faction biome
-let playerCity = {};
-gameDoc.players.forEach((p) => {
-    let pBiome = factionBiome[p.faction];
-    let randPosition = biomePosition[pBiome][Math.floor(Math.random() * biomePosition[pBiome].length)];
-    Object.defineProperty(playerCity, p.name, { value: randPosition });
-});
+import { startGame } from './game-creation.js';
 
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {
-    //Starting game
-    const today = new Date();
-    console.log(Math.floor(Math.random() * gameDoc.nrPlayers));
-    await updateDoc(gameRef, {
-        turnOfPlayer: gameDoc.players[Math.floor(Math.random() * gameDoc.nrPlayers)].name,
-        dateStarted: serverTimestamp(),
-        started: true,
-        factionNotSelected: deleteField(),
-        factionsAvailable: deleteField(),
-        invitedUsers: deleteField(),
-    });
-    //Adding known hexes
-    gameDoc.players.forEach(async (player) => {
-        let adjacentHexes = adjacent(playerCity[player.name]);
-        await setDoc(
-            doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'),
-            {
-                [player.name]: {
-                    cityLocations: [playerCity[player.name]],
-                    knownHexes: adjacentHexes.concat(playerCity[player.name]),
-                },
-            },
-            { merge: true }
-        );
-    });
-    //Adding starting resources
-    gameDoc.players.forEach(async (player) => {
-        await setDoc(
-            doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
-            {
-                [player.name]: {
-                    cash: 0,
-                    people: 0,
-                    stone: 0,
-                    wood: 0,
-                    food: 0,
-                    metals: 0,
-                },
-            },
-            { merge: true }
-        );
-    });
-    //Adding map terrain, cities etc.
-    await setDoc(
-        doc(database, 'Games', gameName, 'Map', 'Terrain'),
-        {
-            terrain: biomes,
-        },
-        { merge: true }
-    );
-    let ifDone = 0;
-    gameDoc.players.forEach(async (p) => {
-        let cityName = 'capital' + p.name;
-        ifDone = ifDone + 1;
-        await setDoc(
-            doc(database, 'Games', gameName, 'Map', 'Cities'),
-            {
-                [cityName]: {
-                    owner: p.name,
-                    location: playerCity[p.name],
-                },
-            },
-            { merge: true }
-        );
-        // If the forEach is done, go to game
-        if (ifDone == gameDoc.nrPlayers) {
-            window.location.href = 'game.html';
-        }
-    });
+    startGame(gameDoc.gameName);
 }
 
 // Who accepted and who did not
