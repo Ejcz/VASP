@@ -1,5 +1,19 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, onSnapshot, setDoc, collection, getDocs, deleteDoc, updateDoc, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	onSnapshot,
+	setDoc,
+	collection,
+	getDocs,
+	deleteDoc,
+	updateDoc,
+	arrayRemove,
+	query,
+	where,
+	arrayUnion,
+} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -23,9 +37,10 @@ window.deleteGame = async (game) => {
 		const subSnapshot = await getDocs(collection(docRef, subName));
 		for (const subDoc of subSnapshot.docs) {
 			// Recursively delete sub-subcollections if needed
-			await deleteDoc(`${database}/Games/${game}/${subName}/${subDoc.id}`);
+			await deleteDoc(doc(database, 'Games', game, subName, subDoc.id));
 		}
 	}
+
 	await deleteDoc(docRef);
 
 	const users = (await getDocs(collection(database, 'Users'))).docs.map((doc) => doc.id);
@@ -48,16 +63,51 @@ window.deleteGame = async (game) => {
 };
 
 //Command for quickly creating a game
+import { startGame } from './game-creation.js';
 
 window.createGame = async (gameName, listOfPlayers, turnTime) => {
-	if (typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isInteger(turnTime)) {
+	let correctData = true;
+	//Checks for correct inputs
+	if (!(typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isInteger(turnTime))) {
+		correctData = false;
+	}
+	//Checks for actual players
+	listOfPlayers.forEach(async (player) => {
+		const userRef = await getDocs(query(collection(database, 'Users'), where('displayName', '==', player)));
+		if (userRef.docs.length == 0) {
+			correctData = false;
+		}
+	});
+	//Checks if the game exists
+	const gameQuery = await getDocs(query(collection(database, 'Games'), where('gameName', '==', gameName)));
+	if (gameQuery.docs.length != 0) {
+		correctData = false;
+	}
+	//Creates the game
+	if (correctData) {
 		//Picks random factions for the players
 		const randomFactions = ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6']
 			.map((val) => ({ val, sort: Math.random() }))
 			.sort((a, b) => a.sort - b.sort)
 			.slice(0, listOfPlayers.length)
 			.map(({ val }) => val);
+		const players = listOfPlayers.map((plr, index) => ({ name: plr, faction: randomFactions[index] }));
+		//Adding game to user docs
+		listOfPlayers.forEach(async (player) => {
+			const userId = (await getDocs(query(collection(database, 'Users'), where('displayName', '==', player)))).docs[0].id;
+			await updateDoc(doc(database, 'Users', userId), {
+				games: arrayUnion(gameName),
+			});
+		});
+		await setDoc(doc(database, 'Games', gameName), {
+			gameName: gameName,
+			started: false,
+			players: players,
+			nrPlayers: listOfPlayers.length,
+			turnTime: parseInt(turnTime),
+		});
+		startGame(gameName);
 	} else {
-		return 'incorrect data provided';
+		console.log('incorrect data provided');
 	}
 };
