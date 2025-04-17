@@ -14,24 +14,50 @@ const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 const games = (await getDocs(collection(database, 'Games'))).docs.map((doc) => doc.id);
 
+//Delete all traces of a game command
+
 window.deleteGame = async (game) => {
-	if (games.includes(game)) {
-		await deleteDoc(doc(database, 'Games', game));
+	const docRef = doc(database, 'Games', game);
+	const subcollectionNames = ['GameInfo', 'Map'];
+	for (const subName of subcollectionNames) {
+		const subSnapshot = await getDocs(collection(docRef, subName));
+		for (const subDoc of subSnapshot.docs) {
+			// Recursively delete sub-subcollections if needed
+			await deleteDoc(`${database}/Games/${game}/${subName}/${subDoc.id}`);
+		}
 	}
+	await deleteDoc(docRef);
+
 	const users = (await getDocs(collection(database, 'Users'))).docs.map((doc) => doc.id);
 	let userdata;
 	users.forEach(async (el) => {
-		userdata = (await getDoc(doc(database, 'Users', el))).data();
+		const userRef = doc(database, 'Users', el);
+		userdata = (await getDoc(userRef)).data();
 		if (userdata.games.includes(game)) {
-			await updateDoc(doc(database, 'Users', el), {
+			await updateDoc(userRef, {
 				games: arrayRemove(game),
 			});
 		}
 		if (userdata.invitations.map((elem) => elem.gameName).includes(game)) {
 			let index = userdata.invitations.map((elem) => elem.gameName).indexOf(game);
-			await updateDoc(doc(database, 'Users', el), {
+			await updateDoc(userRef, {
 				invitations: arrayRemove(userdata.invitations[index]),
 			});
 		}
 	});
+};
+
+//Command for quickly creating a game
+
+window.createGame = async (gameName, listOfPlayers, turnTime) => {
+	if (typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isInteger(turnTime)) {
+		//Picks random factions for the players
+		const randomFactions = ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6']
+			.map((val) => ({ val, sort: Math.random() }))
+			.sort((a, b) => a.sort - b.sort)
+			.slice(0, listOfPlayers.length)
+			.map(({ val }) => val);
+	} else {
+		return 'incorrect data provided';
+	}
 };
