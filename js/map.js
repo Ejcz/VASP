@@ -5,6 +5,7 @@ import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } 
 //Import global variables
 import {defaultBuildingsCount} from './variables.js'
 
+
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
     authDomain: 'terragame-e41cc.firebaseapp.com',
@@ -88,7 +89,6 @@ const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Citie
 
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
-console.log(knownHexes);
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
     knownHexes = docSnap.data().discoveredHexes;
 });
@@ -319,7 +319,6 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                     [cityName]: {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
-
                         buildings: defaultBuildingsCount
                     },
                 },

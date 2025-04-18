@@ -23,9 +23,15 @@ const turnPassedTime = gameData.turnPassedTime.toDate();
 const turnTime = gameData.turnTime;
 const players = gameData.players.map((player) => player.name);
 let turnOfPlayer = gameData.turnOfPlayer;
-const today = new Date();
 
 // How much time passed since last pass
-let timePassed = today - turnPassedTime;
-
-console.log(turnPassedTime, turnTime, players, today);
+const countdown = setInterval(() => {
+    let today = new Date();
+    let timePassed = today - turnPassedTime;
+    let remaining = turnTime * 3600 - timePassed / 1000;
+    let remainingSeconds = Math.floor(remaining % 60);
+    let remainingMinutes = Math.floor((remaining % 3600) / 60);
+    let remainingHours = Math.floor(remaining / 3600);
+    let timeString = remainingHours + ':' + remainingMinutes + ':' + remainingSeconds;
+    console.log(timeString);
+}, 1000);
