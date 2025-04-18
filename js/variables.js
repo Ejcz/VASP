@@ -20,3 +20,11 @@ const factionBiome = {
     faction6: 'ocean',
 };
 export { factionDescriptions, hex_rows, hex_columns, factionBiome };
+
+// Default buildings settings
+
+let defaultBuildings = {
+    barracs: 0,
+    school: 0,
+    farm: 0
+};
