@@ -22,10 +22,27 @@ const factionBiome = {
 
 // Default buildings settings
 
-const defaultBuildings = {
-    barracs: 0,
-    school: 0,
-    farm: 0,
-};
+const buildingsCollection = [
+    {
+        name: 'barracs',
+        initialCount: 0,
+        cost:1
+    },
+    {
+        name: 'school',
+        initialCount: 0,
+        cost:1
+    },
+    {
+        name: 'farm',
+        initialCount: 0,
+        cost:1
+    }
+];
 
-export { factionDescriptions, hex_rows, hex_columns, factionBiome, defaultBuildings };
+const defaultBuildingsCount = buildingsCollection.reduce((accumulator,currentBuilding) => {
+    accumulator[currentBuilding.name]= currentBuilding.cost;
+    return accumulator;
+}, {});
+
+export { factionDescriptions, hex_rows, hex_columns, factionBiome, buildingsCollection, defaultBuildingsCount};
