@@ -32,6 +32,7 @@ body {
     transform: translateY(-50%);
     font-family: 'Montserrat', sans-serif;
     font-size: 1.4rem;
+    text-align: left;
     width: 13.5rem;
 }
 .turn-counter span {

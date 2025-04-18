@@ -205,7 +205,7 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData'
 });
 // Navigation bar buttons - animation
 const nav_ref = document.getElementsByClassName('nav-button');
-
+console.log(nav_ref);
 function clear_nav() {
     [].forEach.call(nav_ref, function (element2) {
         element2.classList.remove('nav-button-clicked');
