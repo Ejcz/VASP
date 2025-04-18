@@ -79,6 +79,12 @@ export async function startGame(gameName) {
                 [cityName]: {
                     owner: p.name,
                     location: playerCity[p.name],
+
+                    buildings: {
+                        school: 0,
+                        barracs: 0,
+                        farm:0
+                    }
                 },
             },
             { merge: true }
