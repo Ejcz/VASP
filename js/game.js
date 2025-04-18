@@ -2,6 +2,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
+//Import global variables
+import {defaultBuildings} from './variables.js'
+
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
     authDomain: 'terragame-e41cc.firebaseapp.com',
@@ -323,6 +326,8 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                     [cityName]: {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
+
+                        buildings: defaultBuildings
                     },
                 },
                 { merge: true }
