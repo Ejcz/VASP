@@ -205,7 +205,6 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData'
 });
 // Navigation bar buttons - animation
 const nav_ref = document.getElementsByClassName('nav-button');
-console.log(nav_ref);
 function clear_nav() {
     [].forEach.call(nav_ref, function (element2) {
         element2.classList.remove('nav-button-clicked');
@@ -217,24 +216,6 @@ function clear_nav() {
         clear_nav();
         element.classList.add('nav-button-clicked');
     });
-});
-
-// Nav turn pass button clicked
-
-document.querySelector('.nav-button-confirm').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.add('blur-animation');
-    document.querySelector('.pass-turn').classList.add('pass-turn-animation');
-});
-
-// Pass turn yes/no buttons
-
-document.querySelector('.no-answer').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.remove('blur-animation');
-    document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
-});
-
-document.querySelector('.yes-answer').addEventListener('click', (ev) => {
-    //whatever hubert puts in here
 });
 
 // Hex clicking function

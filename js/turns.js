@@ -89,6 +89,24 @@ const countdown = setInterval(() => {
     }
 }, 1000);
 
+// Nav turn pass button clicked
+document.querySelector('.nav-button-confirm').addEventListener('click', (ev) => {
+    document.querySelector('.blur').classList.add('blur-animation');
+    document.querySelector('.pass-turn').classList.add('pass-turn-animation');
+});
+
+// Pass turn yes/no buttons
+document.querySelector('.no-answer').addEventListener('click', (ev) => {
+    document.querySelector('.blur').classList.remove('blur-animation');
+    document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
+});
+
+document.querySelector('.yes-answer').addEventListener('click', (ev) => {
+    passTurn(turnOfPlayer, 1);
+    document.querySelector('.blur').classList.remove('blur-animation');
+    document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
+});
+
 // Passing the turn function
 async function passTurn(currentPlayer, howManyTimes) {
     let currentPlayerNumber = players.indexOf(currentPlayer);
