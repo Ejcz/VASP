@@ -1,5 +1,18 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, query, collection, where, getDocs, updateDoc, arrayUnion, runTransaction, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    query,
+    collection,
+    where,
+    getDocs,
+    updateDoc,
+    arrayUnion,
+    runTransaction,
+    setDoc,
+    serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -90,9 +103,11 @@ async function GetCreateForm() {
 let invitedCount = 0;
 let invitedUsers = [];
 let invitedUserId;
+const today = new Date();
+const noUser = document.querySelector('#no-user');
 const userMessage = document.querySelector('#user-message');
-//Creating a game and inviting others function
 
+//Creating a game and inviting others function
 function InviteButton() {
     document.querySelector('#invite-btt').addEventListener('click', async () => {
         let invite = document.querySelector('#invite-people').value;
@@ -124,6 +139,7 @@ function InviteButton() {
                             await setDoc(doc(database, 'Games', gameName), {
                                 gameName: gameName,
                                 started: false,
+                                dateStarted: serverTimestamp(),
                                 invitedUsers: invitedUsers,
                                 factionNotSelected: [userData.displayName],
                                 players: [],
@@ -131,7 +147,6 @@ function InviteButton() {
                                 nrPlayers: parseInt(nrPeople),
                                 turnTime: parseInt(turnTime),
                             });
-                            location.reload();
                         }
                     } else {
                         userMessage.innerHTML = "You've already invited this user<br>";
