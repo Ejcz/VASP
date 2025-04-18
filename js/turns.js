@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -56,5 +56,3 @@ const countdown = setInterval(() => {
     }
     document.querySelector('#remaining-time').innerHTML = timeString;
 }, 1000);
-
-// Checking whose turn is it
