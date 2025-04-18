@@ -236,7 +236,6 @@ function hex_clicked(hex_id, cursorX, cursorY) {
 }
 
 //General pop-out functions
-
 function city_popout_open(location) {
     let city;
     for (const c in cities) {
