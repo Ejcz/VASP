@@ -92,11 +92,13 @@ async function GetCreateForm() {
     turnTime = document.querySelector('#turn-time').value;
     invitedText.innerHTML = 'Invited Users 0/' + (nrPeople - 1) + ':';
     const gameNames = await getDocs(query(collection(database, 'Games'), where('gameName', '==', gameName)));
-    if (gameNames._snapshot.docChanges.length == 0) {
+    if (gameNames._snapshot.docChanges.length != 0) {
+        document.querySelector('#name-taken').innerHTML = 'Name is already taken';
+    } else if (gameName.includes(' ')) {
+        document.querySelector('#name-taken').innerHTML = 'Name has a space';
+    } else {
         document.querySelector('#invitation-menu').style.transform = 'translate(-50%,-50%) scaleY(1)';
         document.querySelector('#name-taken').innerHTML = ' ';
-    } else {
-        document.querySelector('#name-taken').innerHTML = 'Name is already taken';
     }
 }
 
