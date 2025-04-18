@@ -32,6 +32,7 @@ export async function startGame(gameName) {
         let randPosition = biomePosition[pBiome][Math.floor(Math.random() * biomePosition[pBiome].length)];
         Object.defineProperty(playerCity, p.name, { value: randPosition });
     });
+
     //Starting game
     await updateDoc(gameRef, {
         started: true,
@@ -41,12 +42,14 @@ export async function startGame(gameName) {
         factionsAvailable: deleteField(),
         invitedUsers: deleteField(),
     });
+
     // Adding starting resources and known hexes
     gameDoc.players.forEach(async (player) => {
         let adjacentHexes = adjacent(playerCity[player.name]);
         await setDoc(
             doc(database, 'Games', gameName, 'UserData', player.name),
             {
+                faction: player.faction,
                 cityLocations: [playerCity[player.name]],
                 discoveredHexes: adjacentHexes.concat(playerCity[player.name]),
                 resources: {
@@ -70,9 +73,12 @@ export async function startGame(gameName) {
         { merge: true }
     );
     let ifDone = 0;
+    //Deleting array players
+    await updateDoc(gameRef, {
+        players: gameDoc.players.map((obj) => obj.name),
+    });
 
-
-
+    //Creating starting cities
     gameDoc.players.forEach(async (p) => {
         let cityName = 'capital' + p.name;
         ifDone = ifDone + 1;
@@ -82,14 +88,14 @@ export async function startGame(gameName) {
                 [cityName]: {
                     owner: p.name,
                     location: playerCity[p.name],
-                    buildings: defaultBuildingsCount
-
+                    buildings: defaultBuildingsCount,
                 },
             },
             { merge: true }
         );
         //If the forEach is done go to game
         if (ifDone == gameDoc.nrPlayers) {
+            localStorage.setItem('game', gameDoc.gameName);
             window.location.href = 'game.html';
         }
     });
