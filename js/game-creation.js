@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import { biomes, biomePosition, adjacent } from './biome-generation.js';
-import { factionBiome, hex_columns, defaultBuildings } from './variables.js';
+import { factionBiome, hex_columns, defaultBuildingsCount } from './variables.js';
 
 
 
@@ -72,6 +72,9 @@ export async function startGame(gameName) {
         { merge: true }
     );
     let ifDone = 0;
+
+
+
     gameDoc.players.forEach(async (p) => {
         let cityName = 'capital' + p.name;
         ifDone = ifDone + 1;
@@ -82,7 +85,7 @@ export async function startGame(gameName) {
                     owner: p.name,
                     location: playerCity[p.name],
 
-                    buildings: defaultBuildings
+                    buildings: defaultBuildingsCount
                 },
             },
             { merge: true }

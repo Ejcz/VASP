@@ -19,7 +19,7 @@ const factionBiome = {
     faction5: 'mountains',
     faction6: 'ocean',
 };
-export { factionDescriptions, hex_rows, hex_columns, factionBiome };
+
 
 // Default buildings settings
 
@@ -41,6 +41,11 @@ const buildingsCollection = [
     }
 ];
 
-const defaultBuildingsCount = 0;
+const defaultBuildingsCount = buildingsCollection.reduce((accumulator,currentBuilding) => {
+    accumulator[currentBuilding.name]= currentBuilding.cost;
+    return accumulator;
+}, {});
+
+export { factionDescriptions, hex_rows, hex_columns, factionBiome, buildingsCollection, defaultBuildingsCount};
 
 

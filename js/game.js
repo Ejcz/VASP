@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import {defaultBuildings} from './variables.js'
+import {defaultBuildingsCount} from './variables.js'
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -320,7 +320,7 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
 
-                        buildings: defaultBuildings
+                        buildings: defaultBuildingsCount
                     },
                 },
                 { merge: true }
