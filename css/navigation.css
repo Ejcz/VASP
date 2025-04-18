@@ -48,3 +48,51 @@
     height: 0.2rem;
     background-color: #252520;
 }
+.nav-button-confirm img {
+    position: relative;
+    top: 2.4rem;
+}
+.pass-turn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 10;
+    width: 30rem;
+    height: 5rem;
+    border-radius: 1rem;
+    background-color: #1d1d1d;
+    transition: 0.1s all ease-in-out;
+}
+.pass-turn > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    font-weight: 700;
+    color: white;
+}
+.option {
+    float: left;
+    width: 50%;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+.yes-answer {
+    border-bottom-right-radius: 1rem;
+    background-color: #05790d;
+}
+.no-answer {
+    border-bottom-left-radius: 1rem;
+    background-color: #790505;
+}
+.yes-answer:hover {
+    background-color: #06ad12;
+}
+.no-answer:hover {
+    background-color: #af0808;
+}
+.pass-turn-animation {
+    transform: translate(-50%, -50%) scale(1);
+}
