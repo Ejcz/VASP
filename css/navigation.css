@@ -1,0 +1,98 @@
+/* Navigation bars section */
+.nav {
+    background-color: #4b4b41;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-bottom: 1.5rem;
+    width: 5.6rem;
+}
+.nav-button,
+.nav-button-confirm {
+    height: 4.5rem;
+    overflow: hidden;
+    width: 4rem;
+    position: relative;
+    border-radius: 0.2rem;
+    margin: 1rem 0 0 0.8rem;
+    background-color: #a7a79b;
+    cursor: pointer;
+    transition: all ease-in-out 0.3s, border ease-in-out 0.05s;
+    z-index: 1;
+}
+.nav-button:not(.nav-button-clicked):hover,
+.nav-button-confirm:hover {
+    background-color: #cacaba;
+}
+.nav-button-clicked {
+    width: 6rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+    margin: 1rem 0 0 0;
+    border-right: solid 0.2rem #252520;
+    border-top: solid 0.2rem #252520;
+    border-bottom: solid 0.2rem #252520;
+    cursor: auto;
+}
+.nav-button img,
+.nav-button-confirm img {
+    height: calc(0.6 * 4.5rem);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -55%);
+    opacity: 0.9;
+}
+.nav-line {
+    width: 100%;
+    height: 0.2rem;
+    background-color: #252520;
+}
+.nav-button-confirm img {
+    position: relative;
+    top: 2.4rem;
+}
+.pass-turn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 10;
+    width: 30rem;
+    height: 5rem;
+    border-radius: 1rem;
+    background-color: #1d1d1d;
+    transition: 0.1s all ease-in-out;
+}
+.pass-turn > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    font-weight: 700;
+    color: white;
+}
+.option {
+    float: left;
+    width: 50%;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+.yes-answer {
+    border-bottom-right-radius: 1rem;
+    background-color: #05790d;
+}
+.no-answer {
+    border-bottom-left-radius: 1rem;
+    background-color: #790505;
+}
+.yes-answer:hover {
+    background-color: #06ad12;
+}
+.no-answer:hover {
+    background-color: #af0808;
+}
+.pass-turn-animation {
+    transform: translate(-50%, -50%) scale(1);
+}
