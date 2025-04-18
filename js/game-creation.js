@@ -3,8 +3,6 @@ import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteFi
 import { biomes, biomePosition, adjacent } from './biome-generation.js';
 import { factionBiome, hex_columns, defaultBuildings } from './variables.js';
 
-
-
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
     authDomain: 'terragame-e41cc.firebaseapp.com',
@@ -81,8 +79,7 @@ export async function startGame(gameName) {
                 [cityName]: {
                     owner: p.name,
                     location: playerCity[p.name],
-
-                    buildings: defaultBuildings
+                    buildings: defaultBuildings,
                 },
             },
             { merge: true }
