@@ -21,17 +21,40 @@ let gameName = localStorage.getItem('game');
 const gameData = (await getDoc(doc(database, 'Games', gameName))).data();
 const turnPassedTime = gameData.turnPassedTime.toDate();
 const turnTime = gameData.turnTime;
-const players = gameData.players.map((player) => player.name);
 let turnOfPlayer = gameData.turnOfPlayer;
 
-// How much time passed since last pass
+// How much time passed since last pass, display in time left
 const countdown = setInterval(() => {
     let today = new Date();
     let timePassed = today - turnPassedTime;
     let remaining = turnTime * 3600 - timePassed / 1000;
     let remainingSeconds = Math.floor(remaining % 60);
+
+    if (remainingSeconds < 10) {
+        remainingSeconds = '0' + remainingSeconds;
+    }
+
     let remainingMinutes = Math.floor((remaining % 3600) / 60);
+    if (remainingMinutes < 10) {
+        remainingMinutes = '0' + remainingMinutes;
+    }
+
     let remainingHours = Math.floor(remaining / 3600);
-    let timeString = remainingHours + ':' + remainingMinutes + ':' + remainingSeconds;
-    console.log(timeString);
+    if (remainingHours < 10) {
+        remainingHours = '0' + remainingHours;
+    }
+
+    let timeString;
+    if (remainingHours == 0) {
+        if (remainingMinutes == 0) {
+            timeString = remainingSeconds;
+        } else {
+            timeString = remainingMinutes + ':' + remainingSeconds;
+        }
+    } else {
+        timeString = remainingHours + ':' + remainingMinutes + ':' + remainingSeconds;
+    }
+    document.querySelector('#remaining-time').innerHTML = timeString;
 }, 1000);
+
+// Checking whose turn is it
