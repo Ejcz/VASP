@@ -23,8 +23,24 @@ export { factionDescriptions, hex_rows, hex_columns, factionBiome };
 
 // Default buildings settings
 
-let defaultBuildings = {
-    barracs: 0,
-    school: 0,
-    farm: 0
-};
+const buildingsCollection = [
+    {
+        name: 'barracs',
+        initialCount: 0,
+        cost:1
+    },
+    {
+        name: 'school',
+        initialCount: 0,
+        cost:1
+    },
+    {
+        name: 'farm',
+        initialCount: 0,
+        cost:1
+    }
+];
+
+const defaultBuildingsCount = 0;
+
+
