@@ -3,8 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import {defaultBuildingsCount} from './variables.js'
-
+import { defaultBuildingsCount } from './variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -253,7 +252,6 @@ function city_popout_open(location) {
         }
     }
     clear_nav();
-    document.querySelector('#city-button').classList.add('nav-button-clicked');
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
     map_supp.classList.toggle('map-transition');
@@ -319,7 +317,7 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                     [cityName]: {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
-                        buildings: defaultBuildingsCount
+                        buildings: defaultBuildingsCount,
                     },
                 },
                 { merge: true }
