@@ -11,11 +11,10 @@
 .map-supp {
     overflow: hidden;
     position: absolute;
-    box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.75);
     white-space: nowrap;
     max-width: 90%;
-    width: 70rem;
-    height: 80%;
+    width: 90%;
+    height: 90%;
     border-radius: 1rem;
     top: 50%;
     left: 50%;
@@ -205,15 +204,11 @@
     transform: translate(-50%, -50%) scale(0);
     z-index: 10;
     background-color: #939c3b50;
-    height: 95%;
-    aspect-ratio: 1.5;
-    max-width: 80%;
+    height: 100%;
+    width: 100%;
     transition: all 0.2s ease-in-out;
     transition-delay: 0.05s;
-    border-radius: 1.3rem;
     font-weight: 500;
-    border: #4d4d42 0.1rem solid;
-    box-shadow: 0px 0px 15px 5px rgba(36, 36, 36, 0.5);
     justify-content: center;
 }
 

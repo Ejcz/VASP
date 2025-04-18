@@ -71,6 +71,9 @@ window.createGame = async (gameName, listOfPlayers, turnTime) => {
     if (!(typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isInteger(turnTime))) {
         correctData = false;
     }
+    if (gameName.includes(' ')) {
+        correctData = false;
+    }
     //Checks for actual players
     listOfPlayers.forEach(async (player) => {
         const userRef = await getDocs(query(collection(database, 'Users'), where('displayName', '==', player)));
