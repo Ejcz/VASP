@@ -42,7 +42,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 
 // Adding user's games
 userData.games.forEach((game) => {
-    document.querySelector('#your-games').insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br>');
+    document.querySelector('#your-games').insertAdjacentHTML('beforeend', '<button class="home-button game-button" id=' + game + '>' + game + '</button><br/>');
     document.getElementById(game).addEventListener('click', async () => {
         localStorage.setItem('game', game);
         let isStarted = (await getDoc(doc(database, 'Games', game))).data().started;

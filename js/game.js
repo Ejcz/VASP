@@ -2,6 +2,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
+//Import global variables
+import {defaultBuildings} from './variables.js'
+
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
     authDomain: 'terragame-e41cc.firebaseapp.com',
@@ -28,13 +31,6 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
-
-// In-game player numer
-const players = (await getDoc(doc(database, 'Games', gameName))).data().players;
-let playersT = [];
-for (const k of players) {
-    playersT.push(k.name);
-}
 
 // Importing biome data
 const biomes = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Terrain'))).data().terrain;
@@ -322,6 +318,8 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                     [cityName]: {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
+
+                        buildings: defaultBuildings
                     },
                 },
                 { merge: true }
