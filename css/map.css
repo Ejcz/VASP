@@ -1,0 +1,109 @@
+.container-1 {
+    display: flex;
+    height: calc(100vh - var(--fh) - var(--hh));
+    align-items: stretch;
+}
+/* Map section */
+.map {
+    position: relative;
+    flex: 1;
+}
+.map-supp {
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.1s ease-in-out;
+}
+.map-drag {
+    display: block;
+    font-size: 0;
+    position: relative;
+}
+.map-animation {
+    box-shadow: none;
+    width: 0;
+    opacity: 0;
+}
+.map-transition {
+    transition: all 0.2s ease-in-out;
+    transition-delay: 0.15s;
+}
+.hex {
+    width: var(--s);
+    margin: var(--m);
+    height: calc(var(--s) * 1.1547);
+    display: inline-block;
+    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+    background-color: #152623;
+    margin-bottom: calc(var(--m) - var(--s) * 0.2885);
+    font-size: 0;
+    font-weight: bold;
+    text-align: center;
+    transition-property: color, background, transform;
+    transition-timing-function: ease-in-out;
+    transition-duration: 0.2s;
+    padding-top: 2rem;
+    position: relative;
+}
+.hex:hover {
+    cursor: pointer;
+    transform: scale(0.95);
+}
+.hex-space {
+    width: calc(var(--s) * 0.5);
+    margin-right: var(--m);
+    display: inline-block;
+}
+/* Setting hex biomes properties */
+.desert {
+    background-image: url(../images/desert.png);
+    background-size: 60%;
+}
+.forest {
+    background-image: url(../images/forest.png);
+    background-size: 80%;
+}
+.plains {
+    background-image: url(../images/plains.png);
+    background-size: 75%;
+}
+.jungle {
+    background-image: url(../images/swamp.png);
+    background-size: 100%;
+}
+.mountains {
+    background-image: url(../images/mountains.png);
+    background-size: 100%;
+}
+.ocean {
+    background-image: url(../images/ocean.png);
+}
+.unknown_hex {
+    background-color: #929ca1;
+}
+/* Setting up city hex properties */
+.user_city::after,
+.enemy_city::after {
+    background-image: url(../images/buildings.png);
+    background-color: #77777770;
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: 50% 40%;
+    content: '';
+    width: var(--s);
+    margin: var(--m);
+    height: calc(var(--s) * 1.1547);
+    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.enemy_city::after {
+    background-image: url(../images/evil-buildings.png);
+}
