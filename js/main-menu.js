@@ -145,7 +145,7 @@ function InviteButton() {
                                 players: [],
                                 factionsAvailable: ['faction1', 'faction2', 'faction3', 'faction4', 'faction5', 'faction6'],
                                 nrPlayers: parseInt(nrPeople),
-                                turnTime: parseInt(turnTime),
+                                turnTime: parseInt(turnTime * 3600),
                             });
                         }
                     } else {
