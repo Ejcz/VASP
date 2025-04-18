@@ -32,7 +32,7 @@ const games = (await getDocs(collection(database, 'Games'))).docs.map((doc) => d
 
 window.deleteGame = async (game) => {
     const docRef = doc(database, 'Games', game);
-    const subcollectionNames = ['GameInfo', 'Map'];
+    const subcollectionNames = ['UserData', 'Map'];
     for (const subName of subcollectionNames) {
         const subSnapshot = await getDocs(collection(docRef, subName));
         for (const subDoc of subSnapshot.docs) {
