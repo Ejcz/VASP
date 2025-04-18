@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -18,16 +18,43 @@ let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
 
 // All the values needed
-const gameData = (await getDoc(doc(database, 'Games', gameName))).data();
-const turnPassedTime = gameData.turnPassedTime.toDate();
-const turnTime = gameData.turnTime;
+const gameRef = doc(database, 'Games', gameName);
+const gameData = (await getDoc(gameRef)).data();
+let turnPassedTime = gameData.turnPassedTime.toDate();
+let turnTime = gameData.turnTime;
+let players = gameData.players;
 let turnOfPlayer = gameData.turnOfPlayer;
 
+// Making the values update
+const gameDataSnapshot = onSnapshot(gameRef, async (docSnap) => {
+    let data = docSnap.data();
+    turnPassedTime = data.turnPassedTime.toDate();
+    turnTime = data.turnTime;
+    players = data.players;
+    turnOfPlayer = data.turnOfPlayer;
+});
+
+const today = new Date();
+
+// If turns passed while everyone was offline, pass this many turns, calculate time left in turn
+let timePassed = (today - turnPassedTime) / 1000;
+if (timePassed > turnTime) {
+    let howManyTurnsPassed = Math.floor(timePassed / turnTime);
+    let howMuchTimeInTurn = timePassed % turnTime;
+    passTurn(turnOfPlayer, howManyTurnsPassed);
+
+    let whenLastPassed = new Date(today - howMuchTimeInTurn * 1000);
+    turnPassedTime = whenLastPassed;
+
+    await updateDoc(gameRef, {
+        turnPassedTime: turnPassedTime,
+    });
+}
 // How much time passed since last pass, display in time left
 const countdown = setInterval(() => {
     let today = new Date();
     let timePassed = today - turnPassedTime;
-    let remaining = turnTime * 3600 - timePassed / 1000;
+    let remaining = turnTime - timePassed / 1000;
     let remainingSeconds = Math.floor(remaining % 60);
 
     if (remainingSeconds < 10) {
@@ -55,4 +82,21 @@ const countdown = setInterval(() => {
         timeString = remainingHours + ':' + remainingMinutes + ':' + remainingSeconds;
     }
     document.querySelector('#remaining-time').innerHTML = timeString;
+
+    // If time ran out, pass the turn
+    if (remaining < 1) {
+        passTurn(turnOfPlayer, 1);
+    }
 }, 1000);
+
+// Passing the turn function
+async function passTurn(currentPlayer, howManyTimes) {
+    let currentPlayerNumber = players.indexOf(currentPlayer);
+    let nextPlayerNumber = (currentPlayerNumber + howManyTimes) % players.length;
+    turnOfPlayer = players[nextPlayerNumber];
+    turnPassedTime = new Date();
+    await updateDoc(gameRef, {
+        turnPassedTime: turnPassedTime,
+        turnOfPlayer: turnOfPlayer,
+    });
+}
