@@ -2,6 +2,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
+//Import global variables
+import {defaultBuildings} from './variables.js'
+
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
     authDomain: 'terragame-e41cc.firebaseapp.com',
@@ -84,9 +87,10 @@ const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Citie
 });
 
 // Known hexes data
-let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'))).data()[userData.displayName].knownHexes;
-const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'), async (docSnap) => {
-    knownHexes = docSnap.data()[userData.displayName].knownHexes;
+let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
+console.log(knownHexes);
+const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
+    knownHexes = docSnap.data().discoveredHexes;
 });
 // Hex rendering function
 
@@ -194,13 +198,12 @@ document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
 
 // Resources statistics
 let resources;
-const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'GameInfo', 'Resources'), async (docSnap) => {
-    resources = docSnap.data()[userData.displayName];
+const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
+    resources = docSnap.data().resources;
     for (let r in resources) {
         document.querySelector('.' + r + '-stat').innerHTML = resources[r];
     }
 });
-
 // Navigation bar buttons - animation
 const nav_ref = document.getElementsByClassName('nav-button');
 
@@ -298,19 +301,16 @@ setTimeout(() => {
 // Building cities
 document.querySelector('.build-city').addEventListener('click', async () => {
     if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
-        let known = (await getDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'))).data()[userData.displayName];
-        const knownAfter = [...new Set([...known.knownHexes, ...adjacent(parseInt(clickedHexId))])];
-        const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.knownHexes.includes(item));
+        let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
+        const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
+        const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
         addedHexes.forEach((hex) => {
             document.getElementById(hex).classList.add(biomes[hex]);
         });
         if (!known.cityLocations.includes(parseInt(clickedHexId))) {
-            await updateDoc(doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'), {
-                [userData.displayName]: {
-                    ...known,
-                    knownHexes: knownAfter,
-                    cityLocations: known.cityLocations.concat(parseInt(clickedHexId)),
-                },
+            await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+                discoveredHexes: knownAfter,
+                cityLocations: known.cityLocations.concat(parseInt(clickedHexId)),
             });
             let cityName = userData.displayName + 'city' + (known.cityLocations.length + 1);
             await setDoc(
@@ -319,12 +319,14 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                     [cityName]: {
                         owner: userData.displayName,
                         location: parseInt(clickedHexId),
+
+                        buildings: defaultBuildings
                     },
                 },
                 { merge: true }
             );
-            await updateDoc(doc(database, 'Games', gameName, 'GameInfo', 'Resources'), {
-                [userData.displayName]: {
+            await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+                resources: {
                     ...resources,
                     wood: resources.wood - 100,
                     metals: resources.metals - 5,

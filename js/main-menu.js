@@ -103,8 +103,6 @@ async function GetCreateForm() {
 let invitedCount = 0;
 let invitedUsers = [];
 let invitedUserId;
-const today = new Date();
-const noUser = document.querySelector('#no-user');
 const userMessage = document.querySelector('#user-message');
 
 //Creating a game and inviting others function
@@ -139,7 +137,7 @@ function InviteButton() {
                             await setDoc(doc(database, 'Games', gameName), {
                                 gameName: gameName,
                                 started: false,
-                                dateStarted: serverTimestamp(),
+                                turnPassedTime: serverTimestamp(),
                                 invitedUsers: invitedUsers,
                                 factionNotSelected: [userData.displayName],
                                 players: [],

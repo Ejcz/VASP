@@ -18,11 +18,14 @@ let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
 
 // All the values needed
-const dateStarted = (await getDoc(doc(database, 'Games', gameName))).data().dateStarted;
-const turnTime = (await getDoc(doc(database, 'Games', gameName))).data().turnTime;
-const players = (await getDoc(doc(database, 'Games', gameName))).data().players.map((player) => player.name);
-const today = serverTimestamp;
+const gameData = (await getDoc(doc(database, 'Games', gameName))).data();
+const turnPassedTime = gameData.turnPassedTime.toDate();
+const turnTime = gameData.turnTime;
+const players = gameData.players.map((player) => player.name);
+let turnOfPlayer = gameData.turnOfPlayer;
+const today = new Date();
 
-// Checking whose turn is it
+// How much time passed since last pass
+let timePassed = today - turnPassedTime;
 
-console.log(players);
+console.log(turnPassedTime, turnTime, players, today);
