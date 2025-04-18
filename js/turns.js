@@ -25,6 +25,7 @@ let turnTime = gameData.turnTime;
 let players = gameData.players;
 let turnOfPlayer = gameData.turnOfPlayer;
 
+// Making the values update
 const gameDataSnapshot = onSnapshot(gameRef, async (docSnap) => {
     let data = docSnap.data();
     turnPassedTime = data.turnPassedTime.toDate();
@@ -35,6 +36,7 @@ const gameDataSnapshot = onSnapshot(gameRef, async (docSnap) => {
 
 const today = new Date();
 
+// If turns passed while everyone was offline, pass this many turns, calculate time left in turn
 let timePassed = (today - turnPassedTime) / 1000;
 if (timePassed > turnTime) {
     let howManyTurnsPassed = Math.floor(timePassed / turnTime);
@@ -80,11 +82,14 @@ const countdown = setInterval(() => {
         timeString = remainingHours + ':' + remainingMinutes + ':' + remainingSeconds;
     }
     document.querySelector('#remaining-time').innerHTML = timeString;
+
+    // If time ran out, pass the turn
     if (remaining < 1) {
         passTurn(turnOfPlayer, 1);
     }
 }, 1000);
 
+// Passing the turn function
 async function passTurn(currentPlayer, howManyTimes) {
     let currentPlayerNumber = players.indexOf(currentPlayer);
     let nextPlayerNumber = (currentPlayerNumber + howManyTimes) % players.length;
