@@ -29,13 +29,6 @@ const userData = (await getDoc(doc(database, 'Users', user))).data();
 // Icon setting
 document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 
-// In-game player numer
-const players = (await getDoc(doc(database, 'Games', gameName))).data().players;
-let playersT = [];
-for (const k of players) {
-    playersT.push(k.name);
-}
-
 // Importing biome data
 const biomes = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Terrain'))).data().terrain;
 
