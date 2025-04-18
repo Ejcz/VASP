@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import { biomes, biomePosition, adjacent } from './biome-generation.js';
 import { factionBiome, hex_columns } from './variables.js';
 
@@ -18,17 +18,8 @@ const database = getFirestore(app);
 // User id and game id
 let user = localStorage.getItem('user');
 
-// Is user logged in? If not go to log in page.
-if (user == null) {
-    window.location.href = 'log-in.html';
-}
-
-// Get user's data
-const userData = (await getDoc(doc(database, 'Users', user))).data();
-
-// Icon setting
-document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.userInfo.photoURL + "')";
 //------------------------------------------------------------------------------------------------------------------
+
 // Function responsible for starting the game
 
 export async function startGame(gameName) {
@@ -44,30 +35,21 @@ export async function startGame(gameName) {
     //Starting game
     await updateDoc(gameRef, {
         started: true,
+        turnPassedTime: serverTimestamp(),
+        turnOfPlayer: gameDoc.players[Math.floor(Math.random() * gameDoc.nrPlayers)].name,
         factionNotSelected: deleteField(),
         factionsAvailable: deleteField(),
         invitedUsers: deleteField(),
     });
-    //Adding known hexes
+    // Adding starting resources and known hexes
     gameDoc.players.forEach(async (player) => {
         let adjacentHexes = adjacent(playerCity[player.name]);
         await setDoc(
-            doc(database, 'Games', gameName, 'GameInfo', 'DiscoveredHexes'),
+            doc(database, 'Games', gameName, 'UserData', player.name),
             {
-                [player.name]: {
-                    cityLocations: [playerCity[player.name]],
-                    knownHexes: adjacentHexes.concat(playerCity[player.name]),
-                },
-            },
-            { merge: true }
-        );
-    });
-    //Adding starting reasources
-    gameDoc.players.forEach(async (player) => {
-        await setDoc(
-            doc(database, 'Games', gameName, 'GameInfo', 'Resources'),
-            {
-                [player.name]: {
+                cityLocations: [playerCity[player.name]],
+                discoveredHexes: adjacentHexes.concat(playerCity[player.name]),
+                resources: {
                     cash: 0,
                     people: 0,
                     stone: 0,
