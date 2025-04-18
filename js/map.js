@@ -88,7 +88,6 @@ const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Citie
 
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
-console.log(knownHexes);
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
     knownHexes = docSnap.data().discoveredHexes;
 });
