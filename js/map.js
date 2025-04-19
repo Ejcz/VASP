@@ -1,6 +1,6 @@
 // Firebase initialization
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
-import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion, getDocs, collection } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
 import { defaultBuildingsCount, resourceNames, buildingsCollection } from './variables.js';
@@ -62,35 +62,45 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-// Cities data
+//Variables for fetching map data
+let userCitiesLocations = [];
+let enemyCitiesLocations = [];
+let userArmyLocations = [];
+let enemyArmyLocations = [];
+let cities;
 
-const userCities = [];
-const enemyCities = [];
-let userCitiesLocations;
-let enemyCitiesLocations;
-var cities;
-const citiesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'Map', 'Cities'), async (docSnap) => {
-    cities = docSnap.data();
-    for (const city in cities) {
-        if (cities[city].owner == userData.displayName) {
-            if (!userCities.includes(cities[city])) {
-                userCities.push(cities[city]);
-            }
-        } else {
-            if (!enemyCities.includes(cities[city])) {
-                enemyCities.push(cities[city]);
+async function getCurrentData(whatToGet) {
+    //Fetching cities data
+    if (whatToGet.includes('city')) {
+        cities = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Cities'))).data();
+        for (const city in cities) {
+            if (cities[city].owner == userData.displayName) {
+                userCitiesLocations.push(cities[city].location);
+            } else {
+                enemyCitiesLocations.push(cities[city].location);
             }
         }
     }
-    userCitiesLocations = userCities.map((el) => el.location);
-    enemyCitiesLocations = enemyCities.map((el) => el.location);
-});
-
+    //Fetching armies data
+    if (whatToGet.includes('army')) {
+        const usersDocs = (await getDocs(collection(database, 'Games', gameName, 'UserData'))).docs;
+        const armies = usersDocs.map((ele) => ({ armies: ele.data().armies, user: ele.id }));
+        armies.forEach((ele) => {
+            if (ele.user == userData.displayName) {
+                userArmyLocations = userArmyLocations.concat(ele.armies.map((army) => army.location));
+            } else {
+                enemyArmyLocations = enemyArmyLocations.concat(ele.armies.map((army) => army.location));
+            }
+        });
+    }
+}
+await getCurrentData(['city', 'army']);
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
     knownHexes = docSnap.data().discoveredHexes;
 });
+
 // Hex rendering function
 
 function hex_gen(row, col) {
@@ -103,21 +113,26 @@ function hex_gen(row, col) {
             if (knownHexes.includes(nr)) {
                 var known = biomes[nr];
                 if (enemyCitiesLocations.includes(nr)) {
-                    var isEnemyCity = ' enemy_city';
+                    var isCity = ' enemy_city';
+                } else if (userCitiesLocations.includes(nr)) {
+                    var isCity = ' user_city';
                 } else {
-                    var isEnemyCity = '';
+                    var isCity = '';
+                }
+                if (userArmyLocations.includes(nr)) {
+                    var isArmy = ' user_army';
+                } else if (enemyArmyLocations.includes(nr)) {
+                    var isArmy = ' enemy_army';
+                } else {
+                    var isArmy = '';
                 }
             } else {
                 var known = ' unknown_hex';
-                var isEnemyCity = '';
-            }
-            if (userCitiesLocations.includes(nr)) {
-                var isUserCity = ' user_city';
-            } else {
-                var isUserCity = '';
+                var isCity = '';
+                var isArmy = '';
             }
 
-            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isUserCity + isEnemyCity + '" id="' + nr + '">' + nr + '</div>');
+            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
         }
         map_drag.insertAdjacentHTML('beforeend', '<br />');
         if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -204,7 +219,7 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData'
 });
 // Navigation bar buttons - animation
 const nav_ref = document.getElementsByClassName('nav-button');
-console.log(nav_ref);
+
 function clear_nav() {
     [].forEach.call(nav_ref, function (element2) {
         element2.classList.remove('nav-button-clicked');
@@ -216,24 +231,6 @@ function clear_nav() {
         clear_nav();
         element.classList.add('nav-button-clicked');
     });
-});
-
-// Nav turn pass button clicked
-
-document.querySelector('.nav-button-confirm').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.add('blur-animation');
-    document.querySelector('.pass-turn').classList.add('pass-turn-animation');
-});
-
-// Pass turn yes/no buttons
-
-document.querySelector('.no-answer').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.remove('blur-animation');
-    document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
-});
-
-document.querySelector('.yes-answer').addEventListener('click', (ev) => {
-    //whatever hubert puts in here
 });
 
 // Hex clicking function
@@ -324,16 +321,16 @@ function city_popout_open(location) {
     clear_nav();
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 function city_popout_close() {
     document.querySelector('.city-grid').innerHTML = '';
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 // Nav bar map button clicked
@@ -343,6 +340,7 @@ document.querySelector('#map-button').addEventListener('click', () => {
         city_popout_close();
     }
 });
+
 const nonCityPopout = document.querySelector('.noncity-popout');
 nonCityPopout.addEventListener('click', (event) => {
     //If non city popout is clicked, doesn't hide it
@@ -360,15 +358,21 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-//Loader
-
-setTimeout(() => {
-    document.querySelector('.loader-wheel').style.display = 'none';
-}, 1000);
-
 // Building cities
+const alert = document.querySelector('.alert-box');
+
 document.querySelector('.build-city').addEventListener('click', async () => {
-    if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
+    //Checks if an army is occupying this hex
+    if (userArmyLocations.includes(parseInt(clickedHexId)) || enemyArmyLocations.includes(parseInt(clickedHexId))) {
+        alert.innerHTML = 'An army is occupying this hex';
+        alert.style.transitionDuration = '0.3s';
+        alert.classList.add('alert-box-highlight');
+        setTimeout(() => {
+            alert.style.transitionDuration = '2s';
+            alert.classList.remove('alert-box-highlight');
+        }, 1800);
+        //Checks for enough resources and builts the city
+    } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
         let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
         const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
         const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
@@ -400,18 +404,22 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                 },
             });
             document.getElementById(clickedHexId).classList.add('user_city');
+            await getCurrentData(['city']);
         }
     } else {
-        const alert = document.querySelector('.alert-box');
         alert.innerHTML = "You don't have enough resources to build a city";
+        alert.style.transitionDuration = '0.3s';
         alert.classList.add('alert-box-highlight');
-
         setTimeout(() => {
+            alert.style.transitionDuration = '2s';
             alert.classList.remove('alert-box-highlight');
-            alert.classList.add('alert-box-normal');
-        }, 300);
-        setTimeout(() => {
-            alert.classList.remove('alert-box-normal');
-        }, 5000);
+        }, 1800);
     }
+    document.querySelector('.noncity-popout').style.display = 'none';
 });
+
+//Loader (must be last in the file!)
+
+setTimeout(() => {
+    document.querySelector('.loader-wheel').style.display = 'none';
+}, 1000);

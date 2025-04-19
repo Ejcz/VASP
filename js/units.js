@@ -20,3 +20,5 @@ let gameName = localStorage.getItem('game');
 
 // Get user's data
 const userData = (await getDoc(doc(database, 'Users', user))).data();
+
+document.querySelector('.move-army').addEventListener('click', (ev) => {});

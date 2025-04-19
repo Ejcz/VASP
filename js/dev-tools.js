@@ -68,7 +68,7 @@ import { startGame } from './game-creation.js';
 window.createGame = async (gameName, listOfPlayers, turnTime) => {
     let correctData = true;
     //Checks for correct inputs
-    if (!(typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isInteger(turnTime))) {
+    if (!(typeof gameName === 'string' && Array.isArray(listOfPlayers) && Number.isFinite(turnTime))) {
         correctData = false;
     }
     if (gameName.includes(' ')) {
@@ -107,7 +107,7 @@ window.createGame = async (gameName, listOfPlayers, turnTime) => {
             started: false,
             players: players,
             nrPlayers: listOfPlayers.length,
-            turnTime: parseInt(turnTime),
+            turnTime: parseInt(turnTime * 3600),
         });
         startGame(gameName);
     } else {

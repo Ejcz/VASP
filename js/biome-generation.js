@@ -126,24 +126,55 @@ function adjacent(pos) {
     let adjacent = [];
     let pos1 = pos - 1;
     let pos2 = pos + 1;
-    let pos4 = pos - nrColumns;
-    let pos6 = pos + nrColumns;
+    let pos4;
+    let pos6;
     let pos3;
     let pos5;
-    if (Math.trunc(pos / nrColumns) % 2 == 0) {
-        // Checks whether the row is a bit to the left
-        pos3 = pos - nrColumns - 1;
-        pos5 = pos + nrColumns - 1;
-    } else {
-        pos3 = pos - nrColumns + 1;
-        pos5 = pos + nrColumns + 1;
+
+    let isLeftSide = false;
+    let isRightSide = false;
+
+    // Left side of the board
+    if (pos % nrColumns == 0) {
+        pos1 = pos + nrColumns - 1;
+        isLeftSide = true;
+    } else if (pos % nrColumns == 9) {
+        pos2 = pos - nrColumns + 1;
+        isRightSide = true;
     }
+
+    // Checks whether the row is a bit to the left
+    if (Math.trunc(pos / nrColumns) % 2 == 0) {
+        if (isLeftSide == true) {
+            pos3 = pos - 1;
+            pos5 = pos + 2 * nrColumns - 1;
+            pos4 = pos3 - nrColumns + 1;
+            pos6 = pos5 - nrColumns + 1;
+        } else {
+            pos3 = pos - nrColumns - 1;
+            pos5 = pos + nrColumns - 1;
+            pos4 = pos3 + 1;
+            pos6 = pos5 + 1;
+        }
+    } else {
+        pos3 = pos - nrColumns;
+        pos5 = pos + nrColumns;
+        if (isRightSide == true) {
+            pos4 = pos3 - nrColumns + 1;
+            pos6 = pos5 - nrColumns + 1;
+        } else {
+            pos4 = pos3 + 1;
+            pos6 = pos5 + 1;
+        }
+    }
+
+    //On top or on bottom
     if (pos < nrColumns) {
         pos4 = nrHexes - nrColumns + pos;
         pos3 = pos4 - 1;
-    } else if (pos > nrHexes - nrColumns) {
-        pos5 = pos - nrHexes + nrColumns;
-        pos6 = pos5 + 1;
+    } else if (pos >= nrHexes - nrColumns) {
+        pos5 = (pos - nrHexes + nrColumns) % nrColumns;
+        pos6 = (pos5 + 1) % nrColumns;
     }
     adjacent.push(pos1, pos2, pos3, pos4, pos5, pos6);
     return adjacent;

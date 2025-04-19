@@ -5,7 +5,7 @@
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
     z-index: 10;
-    background-color: #939c3b50;
+    background-color: #c5ce74;
     height: 100%;
     width: 100%;
     transition: all 0.2s ease-in-out;
@@ -18,7 +18,7 @@
     transform: translate(-50%, -50%) scale(1);
 }
 .pop-out-transition {
-    transition: all 0.1s ease-in-out;
+    transition: all 0.15s ease-in-out;
     transition-delay: 0s;
 }
 /* Inside Pop-out window section */
