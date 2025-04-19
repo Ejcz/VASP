@@ -236,24 +236,6 @@ function clear_nav() {
     });
 });
 
-// Nav turn pass button clicked
-
-document.querySelector('.nav-button-confirm').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.add('blur-animation');
-    document.querySelector('.pass-turn').classList.add('pass-turn-animation');
-});
-
-// Pass turn yes/no buttons
-
-document.querySelector('.no-answer').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.remove('blur-animation');
-    document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
-});
-
-document.querySelector('.yes-answer').addEventListener('click', (ev) => {
-    //whatever hubert puts in here
-});
-
 // Hex clicking function
 
 let hex_mark = 'map-view'; //The variable which determines what happens when you press a hex tile, by default "map-view" = open the details of the hex (e.g. city view)
