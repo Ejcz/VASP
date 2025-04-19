@@ -113,28 +113,24 @@ function hex_gen(row, col) {
             if (knownHexes.includes(nr)) {
                 var known = biomes[nr];
                 if (enemyCitiesLocations.includes(nr)) {
-                    var isEnemyCity = ' enemy_city';
+                    var isCity = ' enemy_city';
+                } else if (userCitiesLocations.includes(nr)) {
+                    var isCity = ' user_city';
                 } else {
-                    var isEnemyCity = '';
+                    var isCity = '';
+                }
+                if (userArmyLocations.includes(nr)) {
+                    var isArmy = ' user_army';
+                } else if (enemyArmyLocations.includes(nr)) {
+                    var isArmy = ' enemy_army';
                 }
             } else {
                 var known = ' unknown_hex';
-                var isEnemyCity = '';
-            }
-            if (userCitiesLocations.includes(nr)) {
-                var isUserCity = ' user_city';
-            } else {
-                var isUserCity = '';
-            }
-            if (userArmyLocations.includes(nr)) {
-                var isArmy = ' user_army';
-            } else if (enemyArmyLocations.includes(nr)) {
-                var isArmy = ' enemy_army';
-            } else {
+                var isCity = '';
                 var isArmy = '';
             }
 
-            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isUserCity + isEnemyCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
+            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
         }
         map_drag.insertAdjacentHTML('beforeend', '<br />');
         if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -271,16 +267,16 @@ function city_popout_open(location) {
     clear_nav();
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 function city_popout_close() {
     document.querySelector('.city-grid').innerHTML = '';
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 // Nav bar map button clicked

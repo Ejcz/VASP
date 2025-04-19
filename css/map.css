@@ -109,7 +109,7 @@
 }
 .user_army::after,
 .enemy_army::after {
-    background-image: url(../images/warrior-with-sword-and-shield.png);
+    background-image: url(../images/army.png);
     background-color: #cdcdcd70;
     background-size: 70%;
     background-repeat: no-repeat;
@@ -123,4 +123,7 @@
     position: absolute;
     top: 0;
     left: 0;
+}
+.enemy_army::after {
+    background-image: url(../images/evil-army.png);
 }
