@@ -10,6 +10,7 @@
     <script src="js/dev-tools.js" type="module" defer></script>
     <script src="js/turns.js" type="module" defer></script>
     <script src="js/units.js" type="module" defer></script>
+    <script src="js/variables.js" type="module"></script>
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,24 +80,29 @@
         </div>
     </div>
     <div class="footer">
-        <div class="stat-box" title="Cash">
-            <div class="stat-icon">C</div><span class="cash-stat"></span>
-        </div>
-        <div class="stat-box" title="Food">
-            <div class="stat-icon">F</div><span class="food-stat"></span>
-        </div>
-        <div class="stat-box" title="People">
-            <div class="stat-icon">P</div><span class="people-stat"></span>
-        </div>
-        <div class="stat-box" title="Wood">
-            <div class="stat-icon">W</div><span class="wood-stat"></span>
-        </div>
-        <div class="stat-box" title="Stone">
-            <div class="stat-icon">S</div><span class="stone-stat"></span>
-        </div>
-        <div class="stat-box" title="Metals">
-            <div class="stat-icon">M</div><span class="metals-stat"></span>
-        </div>
+        <div class = "stats-container"></div>
+        
+<!--A script generating material statistics boxes-->
+
+        <script type="module">
+            import {resourceNames} from './js/variables.js'
+
+            const statsContainer = document.querySelector('.stats-container');
+            resourceNames.forEach(material => {
+                const iconLetter = material.charAt(0).toUpperCase();  //The first letter of the material, will be displayed next to the material quantity
+                const className = material.toLowerCase() + '-stat'; //The name of the class of the statistic icon box
+
+                const statBoxHTML =`
+                    <div class= "stat-box" title="${material}">
+                        <div class= "stat-icon">${iconLetter}</div>
+                        <span class= "${className}"></span>
+                    </div>
+                `;
+
+                statsContainer.insertAdjacentHTML('beforeend',statBoxHTML);
+            });
+
+        </script>
         <div class="alert-box"></div>
         <div class="loader-wheel">
             <svg class="svgBox" viewBox="0 0 100 100">

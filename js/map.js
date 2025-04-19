@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import { defaultBuildingsCount } from './variables.js';
+import { defaultBuildingsCount, resourceNames, buildingsCollection } from './variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -194,7 +194,6 @@ document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
     window.location.href = 'log-in.html';
     localStorage.clear();
 });
-
 // Resources statistics
 let resources;
 const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
@@ -254,20 +253,73 @@ function hex_clicked(hex_id, cursorX, cursorY) {
     }
 }
 
+// Function checking if you can afford to build a certain building
+
+function checkIfCanAfford(buildingType) {
+
+    const buildingCost = buildingsCollection[buildingType].cost;
+    return Object.entries(buildingCost).every(
+      ([materialType, cost]) => resources[materialType] >= cost
+    );
+  }  
+
+//Function building a building
+
+async function buildABuilding(buildingType, cityName, city) {
+
+    //Updating firebase
+
+
+    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
+    for (const r in buildingCost) {
+        resources[r]-= buildingCost[r];
+    } //Loop updating local player reasources
+    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+        resources: resources
+    }); 
+    
+    //Updating local and firebase resources
+    cities[cityName].buildings[buildingType]+=1
+    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
+        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType]
+    } );
+
+    //Updating user HTML
+    const updatedCity = cities[cityName];
+    const countHTML = document.getElementById(`${buildingType}-count`);
+    countHTML.innerHTML = '';
+    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
+    //Updating building HTML if this is the first time build of that type
+    document.querySelector('#' + buildingType).classList.add('city-building-built')
+}
+
 //General pop-out functions
 
 function city_popout_open(location) {
     let city;
+    let nameCity;
     for (const c in cities) {
         if (cities[c].location == location) {
             city = cities[c];
+            nameCity = c;
         }
     }
+    
     for (const building in city.buildings) {
-        document.querySelector('.city-grid').insertAdjacentHTML('beforeend', '<div class="city-building" id="' + building + '">' + building + '</div>');
-        if (city.buildings[building] == 1) {
+        document.querySelector('.city-grid').insertAdjacentHTML('beforeend',`
+            <div class="city-building" id="${building}">
+                <div>${building}</div>
+                <div class="city-building-count" id="${building}-count">${city.buildings[building]}</div>
+            </div>
+            `);
+        if (city.buildings[building] >= 1) {
             document.querySelector('#' + building).classList.add('city-building-built');
         }
+        document.querySelector('#'+building).addEventListener('click', () => {
+            if (checkIfCanAfford(building)) {
+                buildABuilding(building,nameCity, city);
+            }
+        });
     }
     clear_nav();
     pop_out.classList.toggle('pop-out-transition');

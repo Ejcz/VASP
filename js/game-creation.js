@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { getFirestore, doc, getDoc, updateDoc, arrayRemove, arrayUnion, deleteField, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import { biomes, biomePosition, adjacent } from './biome-generation.js';
-import { factionBiome, hex_columns, defaultBuildingsCount } from './variables.js';
+import { factionBiome, hex_columns, defaultBuildingsCount, resourceNames } from './variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -46,23 +46,23 @@ export async function startGame(gameName) {
     // Adding starting resources and known hexes
     gameDoc.players.forEach(async (player) => {
         let adjacentHexes = adjacent(playerCity[player.name]);
+
+        const globalResources = resourceNames.reduce((accumulator,currentResourceName) => {
+            accumulator[currentResourceName] = 0;
+            return accumulator;
+        },{});
+        
         await setDoc(
             doc(database, 'Games', gameName, 'UserData', player.name),
             {
                 faction: player.faction,
                 cityLocations: [playerCity[player.name]],
                 discoveredHexes: adjacentHexes.concat(playerCity[player.name]),
-                resources: {
-                    cash: 0,
-                    people: 0,
-                    stone: 0,
-                    wood: 0,
-                    food: 0,
-                    metals: 0,
-                },
+                resources: globalResources,
             },
             { merge: true }
         );
+
     });
     //Adding map terrain, cities etc.
     await setDoc(

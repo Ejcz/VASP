@@ -107,3 +107,8 @@
 .enemy_city::after {
     background-image: url(../images/evil-buildings.png);
 }
+.stats-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
