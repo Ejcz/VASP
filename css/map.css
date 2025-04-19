@@ -90,7 +90,7 @@
 .user_city::after,
 .enemy_city::after {
     background-image: url(../images/buildings.png);
-    background-color: #77777770;
+    background-color: #cdcdcd70;
     background-size: 70%;
     background-repeat: no-repeat;
     background-position: 50% 40%;
@@ -106,4 +106,21 @@
 }
 .enemy_city::after {
     background-image: url(../images/evil-buildings.png);
+}
+.user_army::after,
+.enemy_army::after {
+    background-image: url(../images/warrior-with-sword-and-shield.png);
+    background-color: #cdcdcd70;
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: 50% 40%;
+    content: '';
+    width: var(--s);
+    margin: var(--m);
+    height: calc(var(--s) * 1.1547);
+    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }

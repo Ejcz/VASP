@@ -44,11 +44,13 @@ export async function startGame(gameName) {
     });
 
     // Adding starting resources and known hexes
+    // Creating armies array in UserData
     gameDoc.players.forEach(async (player) => {
         let adjacentHexes = adjacent(playerCity[player.name]);
         await setDoc(
             doc(database, 'Games', gameName, 'UserData', player.name),
             {
+                armies: [],
                 faction: player.faction,
                 cityLocations: [playerCity[player.name]],
                 discoveredHexes: adjacentHexes.concat(playerCity[player.name]),
@@ -64,6 +66,7 @@ export async function startGame(gameName) {
             { merge: true }
         );
     });
+
     //Adding map terrain, cities etc.
     await setDoc(
         doc(database, 'Games', gameName, 'Map', 'Terrain'),
