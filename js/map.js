@@ -94,7 +94,7 @@ async function getCurrentData(whatToGet) {
         });
     }
 }
-getCurrentData(['city', 'army']);
+await getCurrentData(['city', 'army']);
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
@@ -123,6 +123,8 @@ function hex_gen(row, col) {
                     var isArmy = ' user_army';
                 } else if (enemyArmyLocations.includes(nr)) {
                     var isArmy = ' enemy_army';
+                } else {
+                    var isArmy = '';
                 }
             } else {
                 var known = ' unknown_hex';
@@ -304,16 +306,21 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-//Loader
-
-setTimeout(() => {
-    document.querySelector('.loader-wheel').style.display = 'none';
-}, 1000);
-
 // Building cities
+const alert = document.querySelector('.alert-box');
 
 document.querySelector('.build-city').addEventListener('click', async () => {
-    if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
+    //Checks if an army is occupying this hex
+    if (userArmyLocations.includes(parseInt(clickedHexId)) || enemyArmyLocations.includes(parseInt(clickedHexId))) {
+        alert.innerHTML = 'An army is occupying this hex';
+        alert.style.transitionDuration = '0.3s';
+        alert.classList.add('alert-box-highlight');
+        setTimeout(() => {
+            alert.style.transitionDuration = '2s';
+            alert.classList.remove('alert-box-highlight');
+        }, 1800);
+        //Checks for enough resources and builts the city
+    } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
         let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
         const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
         const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
@@ -345,10 +352,9 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                 },
             });
             document.getElementById(clickedHexId).classList.add('user_city');
-            getCurrentData(['city']);
+            await getCurrentData(['city']);
         }
     } else {
-        const alert = document.querySelector('.alert-box');
         alert.innerHTML = "You don't have enough resources to build a city";
         alert.style.transitionDuration = '0.3s';
         alert.classList.add('alert-box-highlight');
@@ -357,4 +363,11 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             alert.classList.remove('alert-box-highlight');
         }, 1800);
     }
+    document.querySelector('.noncity-popout').style.display = 'none';
 });
+
+//Loader (must be last in the file!)
+
+setTimeout(() => {
+    document.querySelector('.loader-wheel').style.display = 'none';
+}, 1000);
