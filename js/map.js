@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion, getDocs, collection } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import { defaultBuildingsCount } from './variables.js';
+import { defaultBuildingsCount, resourceNames, buildingsCollection } from './variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -94,7 +94,7 @@ async function getCurrentData(whatToGet) {
         });
     }
 }
-getCurrentData(['city', 'army']);
+await getCurrentData(['city', 'army']);
 // Known hexes data
 let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
@@ -113,28 +113,26 @@ function hex_gen(row, col) {
             if (knownHexes.includes(nr)) {
                 var known = biomes[nr];
                 if (enemyCitiesLocations.includes(nr)) {
-                    var isEnemyCity = ' enemy_city';
+                    var isCity = ' enemy_city';
+                } else if (userCitiesLocations.includes(nr)) {
+                    var isCity = ' user_city';
                 } else {
-                    var isEnemyCity = '';
+                    var isCity = '';
+                }
+                if (userArmyLocations.includes(nr)) {
+                    var isArmy = ' user_army';
+                } else if (enemyArmyLocations.includes(nr)) {
+                    var isArmy = ' enemy_army';
+                } else {
+                    var isArmy = '';
                 }
             } else {
                 var known = ' unknown_hex';
-                var isEnemyCity = '';
-            }
-            if (userCitiesLocations.includes(nr)) {
-                var isUserCity = ' user_city';
-            } else {
-                var isUserCity = '';
-            }
-            if (userArmyLocations.includes(nr)) {
-                var isArmy = ' user_army';
-            } else if (enemyArmyLocations.includes(nr)) {
-                var isArmy = ' enemy_army';
-            } else {
+                var isCity = '';
                 var isArmy = '';
             }
 
-            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isUserCity + isEnemyCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
+            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
         }
         map_drag.insertAdjacentHTML('beforeend', '<br />');
         if (i % 2 == ((current_row % 2) + 2) % 2) {
@@ -211,7 +209,6 @@ document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
     window.location.href = 'log-in.html';
     localStorage.clear();
 });
-
 // Resources statistics
 let resources;
 const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
@@ -253,33 +250,86 @@ function hex_clicked(hex_id, cursorX, cursorY) {
     }
 }
 
+// Function checking if you can afford to build a certain building
+
+function checkIfCanAfford(buildingType) {
+
+    const buildingCost = buildingsCollection[buildingType].cost;
+    return Object.entries(buildingCost).every(
+      ([materialType, cost]) => resources[materialType] >= cost
+    );
+  }  
+
+//Function building a building
+
+async function buildABuilding(buildingType, cityName, city) {
+
+    //Updating firebase
+
+
+    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
+    for (const r in buildingCost) {
+        resources[r]-= buildingCost[r];
+    } //Loop updating local player reasources
+    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+        resources: resources
+    }); 
+    
+    //Updating local and firebase resources
+    cities[cityName].buildings[buildingType]+=1
+    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
+        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType]
+    } );
+
+    //Updating user HTML
+    const updatedCity = cities[cityName];
+    const countHTML = document.getElementById(`${buildingType}-count`);
+    countHTML.innerHTML = '';
+    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
+    //Updating building HTML if this is the first time build of that type
+    document.querySelector('#' + buildingType).classList.add('city-building-built')
+}
+
 //General pop-out functions
 function city_popout_open(location) {
     let city;
+    let nameCity;
     for (const c in cities) {
         if (cities[c].location == location) {
             city = cities[c];
+            nameCity = c;
         }
     }
+    
     for (const building in city.buildings) {
-        document.querySelector('.city-grid').insertAdjacentHTML('beforeend', '<div class="city-building" id="' + building + '">' + building + '</div>');
-        if (city.buildings[building] == 1) {
+        document.querySelector('.city-grid').insertAdjacentHTML('beforeend',`
+            <div class="city-building" id="${building}">
+                <div>${building}</div>
+                <div class="city-building-count" id="${building}-count">${city.buildings[building]}</div>
+            </div>
+            `);
+        if (city.buildings[building] >= 1) {
             document.querySelector('#' + building).classList.add('city-building-built');
         }
+        document.querySelector('#'+building).addEventListener('click', () => {
+            if (checkIfCanAfford(building)) {
+                buildABuilding(building,nameCity, city);
+            }
+        });
     }
     clear_nav();
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 function city_popout_close() {
     document.querySelector('.city-grid').innerHTML = '';
     pop_out.classList.toggle('pop-out-transition');
     pop_out.classList.toggle('pop-out-animation');
-    map_supp.classList.toggle('map-transition');
-    map_supp.classList.toggle('map-animation');
+    //map_supp.classList.toggle('map-transition');
+    //map_supp.classList.toggle('map-animation');
 }
 
 // Nav bar map button clicked
@@ -307,16 +357,21 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-//Loader
-
-setTimeout(() => {
-    document.querySelector('.loader-wheel').style.display = 'none';
-}, 1000);
-
 // Building cities
+const alert = document.querySelector('.alert-box');
 
 document.querySelector('.build-city').addEventListener('click', async () => {
-    if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
+    //Checks if an army is occupying this hex
+    if (userArmyLocations.includes(parseInt(clickedHexId)) || enemyArmyLocations.includes(parseInt(clickedHexId))) {
+        alert.innerHTML = 'An army is occupying this hex';
+        alert.style.transitionDuration = '0.3s';
+        alert.classList.add('alert-box-highlight');
+        setTimeout(() => {
+            alert.style.transitionDuration = '2s';
+            alert.classList.remove('alert-box-highlight');
+        }, 1800);
+        //Checks for enough resources and builts the city
+    } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
         let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
         const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
         const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
@@ -348,10 +403,9 @@ document.querySelector('.build-city').addEventListener('click', async () => {
                 },
             });
             document.getElementById(clickedHexId).classList.add('user_city');
-            getCurrentData(['city']);
+            await getCurrentData(['city']);
         }
     } else {
-        const alert = document.querySelector('.alert-box');
         alert.innerHTML = "You don't have enough resources to build a city";
         alert.style.transitionDuration = '0.3s';
         alert.classList.add('alert-box-highlight');
@@ -360,4 +414,11 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             alert.classList.remove('alert-box-highlight');
         }, 1800);
     }
+    document.querySelector('.noncity-popout').style.display = 'none';
 });
+
+//Loader (must be last in the file!)
+
+setTimeout(() => {
+    document.querySelector('.loader-wheel').style.display = 'none';
+}, 1000);
