@@ -171,18 +171,18 @@ map_drag.style.left = `${-2 * hex_height - 4 * hex_margin}px`;
 //Generating statistics boxes in the beginning
 
 const statsContainer = document.querySelector('.stats-container');
-resourceNames.forEach(material => {
-    const iconLetter = material.charAt(0).toUpperCase();  //The first letter of the material, will be displayed next to the material quantity
+resourceNames.forEach((material) => {
+    const iconLetter = material.charAt(0).toUpperCase(); //The first letter of the material, will be displayed next to the material quantity
     const className = material.toLowerCase() + '-stat'; //The name of the class of the statistic icon box
 
-    const statBoxHTML =`
+    const statBoxHTML = `
         <div class= "stat-box" title="${material}">
             <div class= "stat-icon">${iconLetter}</div>
             <span class= "${className}"></span>
         </div>
     `;
 
-    statsContainer.insertAdjacentHTML('beforeend',statBoxHTML);
+    statsContainer.insertAdjacentHTML('beforeend', statBoxHTML);
 });
 
 // Map dragging:
@@ -281,100 +281,6 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData'
     }
 });
 
-// Function checking if you can afford to build a certain building
-
-function checkIfCanAfford(buildingType) {
-
-    const buildingCost = buildingsCollection[buildingType].cost;
-    return Object.entries(buildingCost).every(
-      ([materialType, cost]) => resources[materialType] >= cost
-    );
-  }  
-
-//Function building a building
-
-async function buildABuilding(buildingType, cityName) {
-
-    //Updating firebase
-
-    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
-    for (const r in buildingCost) {
-        resources[r]-= buildingCost[r];
-    } //Loop updating local player reasources
-    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
-        resources: resources
-    }); 
-    
-    //Updating local and firebase resources
-    cities[cityName].buildings[buildingType]+=1
-    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
-        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType]
-    } );
-
-    //Updating user HTML
-    const updatedCity = cities[cityName];
-    const countHTML = document.getElementById(`${buildingType}-count`);
-    countHTML.innerHTML = '';
-    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
-    //Updating building HTML if this is the first time build of that type
-    document.querySelector('#' + buildingType).classList.add('city-building-built')
-}
-//Pop-out asking you to confirm building transaction
-
-function verifyBuildingTransaction(event, cityName) {
-    const buildingId= event.currentTarget.id;
-    const exitButtonId = `${buildingId}-exit-building-purchase`;
-    if (event.target.id!=exitButtonId) {
-    const buildingHTML = document.querySelector('#'+buildingId);
-    const confirmButtonId = `${buildingId}-confirm-building-purchase`;
-    const confirmBoxId = `${buildingId}-confirm-box`;
-    let confirmBoxHTML = document.querySelector('#'+confirmBoxId);
-
-    // Creates the box and event listeners if they don't exist already
-    if (!confirmBoxHTML) {
-        buildingHTML.insertAdjacentHTML('beforeend',`
-            <div class="confirm-box" id="${confirmBoxId}">
-                <div class="confirm-building-purchase" id="${confirmButtonId}">CONFIRM</div>
-                <div class="exit-building-purchase" id="${exitButtonId}">EXIT</div>
-            </div>
-            `);
-        
-        const confirmButtonHTML = document.querySelector('#'+confirmButtonId);
-        const exitButtonHTML = document.querySelector('#'+exitButtonId);
-        
-        confirmButtonHTML.addEventListener('click', function() {
-            if (checkIfCanAfford(buildingId)) { // Builds the building if you can afford it
-                buildABuilding(buildingId,cityName);
-            } else {
-                buildingPurchaseErrorMessage(buildingId); // Returns an error if you don't have enaugh resources
-            }
-            });
-        exitButtonHTML.addEventListener('click', function() {
-            document.querySelector('#'+confirmBoxId).classList.remove('confirm-box-triggered');
-            document.querySelector('#'+confirmBoxId).remove();
-        });
-
-        confirmBoxHTML = document.querySelector('#'+confirmBoxId);
-        confirmBoxHTML.classList.add('confirm-box-triggered');
-    }
-}
-};
-
-function buildingPurchaseErrorMessage(buildingType) {
-    const articleInjectionMap ={
-        singular: 'a ',
-        plural: ''
-    }
-    const buildingArticle = articleInjectionMap[buildingsCollection[buildingType].gramaticalQuantity];
-    alert.innerHTML = `You don't have enough resources to build ${buildingArticle+buildingType}`;
-    alert.style.transitionDuration = '0.3s';
-    alert.classList.add('alert-box-highlight');
-    setTimeout(() => {
-        alert.style.transitionDuration = '2s';
-        alert.classList.remove('alert-box-highlight');
-    }, 1800);
-};
-
 //General pop-out functions
 function city_popout_open(location) {
     let city;
@@ -399,9 +305,9 @@ function city_popout_open(location) {
         if (city.buildings[building] >= 1) {
             document.querySelector('#' + building).classList.add('city-building-built');
         }
-        document.querySelector('#'+building).addEventListener('click', (event)=> {
+        document.querySelector('#' + building).addEventListener('click', (event) => {
             if (userData.displayName == turnOfPlayer) {
-                verifyBuildingTransaction(event,nameCity);
+                verifyBuildingTransaction(event, nameCity);
             } else {
                 alertMessage("It's not your turn");
             }
@@ -451,17 +357,11 @@ document.addEventListener('click', function () {
 //|                        Player changing game data - interactions                                 |
 //|-------------------------------------------------------------------------------------------------|
 
-// Function checking if you can afford to build a certain building
-
-function checkIfCanAfford(buildingType) {
-    const buildingCost = buildingsCollection[buildingType].cost;
-    return Object.entries(buildingCost).every(([materialType, cost]) => resources[materialType] >= cost);
-}
-
 //Function building a building
 
-async function buildABuilding(buildingType, cityName, city) {
+async function buildABuilding(buildingType, cityName) {
     //Updating firebase
+
     const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
     for (const r in buildingCost) {
         resources[r] -= buildingCost[r];
@@ -483,6 +383,63 @@ async function buildABuilding(buildingType, cityName, city) {
     countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
     //Updating building HTML if this is the first time build of that type
     document.querySelector('#' + buildingType).classList.add('city-building-built');
+}
+
+// Function checking if you can afford to build a certain building
+
+function checkIfCanAfford(buildingType) {
+    const buildingCost = buildingsCollection[buildingType].cost;
+    return Object.entries(buildingCost).every(([materialType, cost]) => resources[materialType] >= cost);
+}
+
+//Pop-out asking you to confirm building transaction
+
+function verifyBuildingTransaction(event, cityName) {
+    const buildingId = event.currentTarget.id;
+    const exitButtonId = `${buildingId}-exit-building-purchase`;
+    if (event.target.id != exitButtonId) {
+        const buildingHTML = document.querySelector('#' + buildingId);
+        const confirmButtonId = `${buildingId}-confirm-building-purchase`;
+        const confirmBoxId = `${buildingId}-confirm-box`;
+        let confirmBoxHTML = document.querySelector('#' + confirmBoxId);
+
+        // Creates the box and event listeners if they don't exist already
+        if (!confirmBoxHTML) {
+            buildingHTML.insertAdjacentHTML(
+                'beforeend',
+                `
+            <div class="confirm-box" id="${confirmBoxId}">
+                <div class="confirm-building-purchase" id="${confirmButtonId}">CONFIRM</div>
+                <div class="exit-building-purchase" id="${exitButtonId}">EXIT</div>
+            </div>
+            `
+            );
+
+            const confirmButtonHTML = document.querySelector('#' + confirmButtonId);
+            const exitButtonHTML = document.querySelector('#' + exitButtonId);
+
+            confirmButtonHTML.addEventListener('click', function () {
+                if (checkIfCanAfford(buildingId)) {
+                    // Builds the building if you can afford it
+                    buildABuilding(buildingId, cityName);
+                } else {
+                    const articleInjectionMap = {
+                        singular: 'a ',
+                        plural: '',
+                    };
+                    const buildingArticle = articleInjectionMap[buildingsCollection[buildingId].gramaticalQuantity];
+                    alertMessage(`You don't have enough resources to build ${buildingArticle + buildingId}`);
+                }
+            });
+            exitButtonHTML.addEventListener('click', function () {
+                document.querySelector('#' + confirmBoxId).classList.remove('confirm-box-triggered');
+                document.querySelector('#' + confirmBoxId).remove();
+            });
+
+            confirmBoxHTML = document.querySelector('#' + confirmBoxId);
+            confirmBoxHTML.classList.add('confirm-box-triggered');
+        }
+    }
 }
 
 // Building cities
