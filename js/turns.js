@@ -16,6 +16,7 @@ const database = getFirestore(app);
 // User id
 let user = localStorage.getItem('user');
 let gameName = localStorage.getItem('game');
+const username = (await getDoc(doc(database, 'Users', user))).data().displayName;
 
 // All the values needed
 const gameRef = doc(database, 'Games', gameName);
@@ -91,8 +92,12 @@ const countdown = setInterval(() => {
 
 // Nav turn pass button clicked
 document.querySelector('.nav-button-confirm').addEventListener('click', (ev) => {
-    document.querySelector('.blur').classList.add('blur-animation');
-    document.querySelector('.pass-turn').classList.add('pass-turn-animation');
+    if (turnOfPlayer == username) {
+        document.querySelector('.blur').classList.add('blur-animation');
+        document.querySelector('.pass-turn').classList.add('pass-turn-animation');
+    } else {
+        alertMessage("It's not your turn");
+    }
 });
 
 // Pass turn yes/no buttons
@@ -107,6 +112,18 @@ document.querySelector('.yes-answer').addEventListener('click', (ev) => {
     document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
 });
 
+//For telling people they're doing something wrong
+const alert = document.querySelector('.alert-box');
+function alertMessage(message) {
+    alert.innerHTML = message;
+    alert.style.transitionDuration = '0.3s';
+    alert.classList.add('alert-box-highlight');
+    setTimeout(() => {
+        alert.style.transitionDuration = '2s';
+        alert.classList.remove('alert-box-highlight');
+    }, 1800);
+}
+
 // Passing the turn function
 async function passTurn(currentPlayer, howManyTimes) {
     let currentPlayerNumber = players.indexOf(currentPlayer);
@@ -118,3 +135,5 @@ async function passTurn(currentPlayer, howManyTimes) {
         turnOfPlayer: turnOfPlayer,
     });
 }
+
+export { turnOfPlayer, alertMessage };

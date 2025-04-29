@@ -62,6 +62,12 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
+//User that is currently playing data
+let userDoc = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
+
+//Whose turn is it?
+import { turnOfPlayer, alertMessage } from './turns.js';
+
 //Variables for fetching map data
 let userCitiesLocations = [];
 let enemyCitiesLocations = [];
@@ -94,9 +100,11 @@ async function getCurrentData(whatToGet) {
         });
     }
 }
+
 await getCurrentData(['city', 'army']);
+
 // Known hexes data
-let knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
+let knownHexes = userDoc.discoveredHexes;
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
     knownHexes = docSnap.data().discoveredHexes;
 });
@@ -245,49 +253,11 @@ function hex_clicked(hex_id, cursorX, cursorY) {
                 city_popout_open(hex_id);
             } else if (document.getElementById(hex_id).classList.contains('enemy_city')) {
             } else if (!document.getElementById(hex_id).classList.contains('unknown_hex')) {
-                noncity_pop_out_open(cursorX, cursorY);
+                if (userData.displayName == turnOfPlayer) {
+                    noncity_pop_out_open(cursorX, cursorY);
+                }
             }
     }
-}
-
-// Function checking if you can afford to build a certain building
-
-function checkIfCanAfford(buildingType) {
-
-    const buildingCost = buildingsCollection[buildingType].cost;
-    return Object.entries(buildingCost).every(
-      ([materialType, cost]) => resources[materialType] >= cost
-    );
-  }  
-
-//Function building a building
-
-async function buildABuilding(buildingType, cityName, city) {
-
-    //Updating firebase
-
-
-    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
-    for (const r in buildingCost) {
-        resources[r]-= buildingCost[r];
-    } //Loop updating local player reasources
-    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
-        resources: resources
-    }); 
-    
-    //Updating local and firebase resources
-    cities[cityName].buildings[buildingType]+=1
-    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
-        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType]
-    } );
-
-    //Updating user HTML
-    const updatedCity = cities[cityName];
-    const countHTML = document.getElementById(`${buildingType}-count`);
-    countHTML.innerHTML = '';
-    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
-    //Updating building HTML if this is the first time build of that type
-    document.querySelector('#' + buildingType).classList.add('city-building-built')
 }
 
 //General pop-out functions
@@ -300,20 +270,27 @@ function city_popout_open(location) {
             nameCity = c;
         }
     }
-    
+
     for (const building in city.buildings) {
-        document.querySelector('.city-grid').insertAdjacentHTML('beforeend',`
+        document.querySelector('.city-grid').insertAdjacentHTML(
+            'beforeend',
+            `
             <div class="city-building" id="${building}">
                 <div>${building}</div>
                 <div class="city-building-count" id="${building}-count">${city.buildings[building]}</div>
             </div>
-            `);
+            `
+        );
         if (city.buildings[building] >= 1) {
             document.querySelector('#' + building).classList.add('city-building-built');
         }
-        document.querySelector('#'+building).addEventListener('click', () => {
-            if (checkIfCanAfford(building)) {
-                buildABuilding(building,nameCity, city);
+        document.querySelector('#' + building).addEventListener('click', () => {
+            if (userData.displayName == turnOfPlayer) {
+                if (checkIfCanAfford(building)) {
+                    buildABuilding(building, nameCity, city);
+                }
+            } else {
+                alertMessage("It's not your turn");
             }
         });
     }
@@ -357,9 +334,45 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-// Building cities
-const alert = document.querySelector('.alert-box');
+//|-------------------------------------------------------------------------------------------------|
+//|                        Player changing game data - interactions                                 |
+//|-------------------------------------------------------------------------------------------------|
 
+// Function checking if you can afford to build a certain building
+
+function checkIfCanAfford(buildingType) {
+    const buildingCost = buildingsCollection[buildingType].cost;
+    return Object.entries(buildingCost).every(([materialType, cost]) => resources[materialType] >= cost);
+}
+
+//Function building a building
+
+async function buildABuilding(buildingType, cityName, city) {
+    //Updating firebase
+    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
+    for (const r in buildingCost) {
+        resources[r] -= buildingCost[r];
+    } //Loop updating local player reasources
+    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+        resources: resources,
+    });
+
+    //Updating local and firebase resources
+    cities[cityName].buildings[buildingType] += 1;
+    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
+        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType],
+    });
+
+    //Updating user HTML
+    const updatedCity = cities[cityName];
+    const countHTML = document.getElementById(`${buildingType}-count`);
+    countHTML.innerHTML = '';
+    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
+    //Updating building HTML if this is the first time build of that type
+    document.querySelector('#' + buildingType).classList.add('city-building-built');
+}
+
+// Building cities
 document.querySelector('.build-city').addEventListener('click', async () => {
     //Checks if an army is occupying this hex
     if (userArmyLocations.includes(parseInt(clickedHexId)) || enemyArmyLocations.includes(parseInt(clickedHexId))) {
@@ -372,7 +385,7 @@ document.querySelector('.build-city').addEventListener('click', async () => {
         }, 1800);
         //Checks for enough resources and builts the city
     } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
-        let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
+        let known = userDoc;
         const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
         const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
         addedHexes.forEach((hex) => {
@@ -406,13 +419,7 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             await getCurrentData(['city']);
         }
     } else {
-        alert.innerHTML = "You don't have enough resources to build a city";
-        alert.style.transitionDuration = '0.3s';
-        alert.classList.add('alert-box-highlight');
-        setTimeout(() => {
-            alert.style.transitionDuration = '2s';
-            alert.classList.remove('alert-box-highlight');
-        }, 1800);
+        alertMessage("You don't have enough resources to build a city");
     }
     document.querySelector('.noncity-popout').style.display = 'none';
 });

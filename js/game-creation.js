@@ -48,11 +48,11 @@ export async function startGame(gameName) {
     gameDoc.players.forEach(async (player) => {
         let adjacentHexes = adjacent(playerCity[player.name]);
 
-        const globalResources = resourceNames.reduce((accumulator,currentResourceName) => {
+        const globalResources = resourceNames.reduce((accumulator, currentResourceName) => {
             accumulator[currentResourceName] = 0;
             return accumulator;
-        },{});
-        
+        }, {});
+
         await setDoc(
             doc(database, 'Games', gameName, 'UserData', player.name),
             {
@@ -64,8 +64,19 @@ export async function startGame(gameName) {
             },
             { merge: true }
         );
-
     });
+
+    // Adding Changes document
+    await setDoc(
+        doc(database, 'Games', gameName, 'UserData', 'Changes'),
+        {
+            armies: [],
+            cities: [],
+            discoveredHexes: [],
+            resources: [],
+        },
+        { merge: true }
+    );
 
     //Adding map terrain, cities etc.
     await setDoc(
