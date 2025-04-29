@@ -38,6 +38,7 @@ const resourceNames = [
 const buildingsCollection = {
     barracs: {
         name: 'barracs',
+        gramaticalQuantity: 'plural',
         initialCount: 0,
         cost: {
             wood: 1,
@@ -46,6 +47,7 @@ const buildingsCollection = {
     },
     school: {
         name: 'school',
+        gramaticalQuantity: 'singular',
         initialCount: 0,
         cost: {
             wood: 1,
@@ -54,6 +56,7 @@ const buildingsCollection = {
     },
     farm: {
         name: 'farm',
+        gramaticalQuantity: 'singular',
         initialCount: 0,
         cost: {
             wood:1,
