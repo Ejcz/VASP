@@ -80,7 +80,29 @@
         </div>
     </div>
     <div class="footer">
-        <div class = "stats-container"></div>       
+        <div class = "stats-container"></div>
+        
+<!--A script generating material statistics boxes-->
+
+        <script type="module">
+            import {resourceNames} from './js/variables.js'
+
+            const statsContainer = document.querySelector('.stats-container');
+            resourceNames.forEach(material => {
+                const iconLetter = material.charAt(0).toUpperCase();  //The first letter of the material, will be displayed next to the material quantity
+                const className = material.toLowerCase() + '-stat'; //The name of the class of the statistic icon box
+
+                const statBoxHTML =`
+                    <div class= "stat-box" title="${material}">
+                        <div class= "stat-icon">${iconLetter}</div>
+                        <span class= "${className}"></span>
+                    </div>
+                `;
+
+                statsContainer.insertAdjacentHTML('beforeend',statBoxHTML);
+            });
+
+        </script>
         <div class="alert-box"></div>
         <div class="loader-wheel">
             <svg class="svgBox" viewBox="0 0 100 100">

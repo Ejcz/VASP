@@ -30,7 +30,6 @@
     gap: 0.5rem;
 }
 .city-building {
-    position: relative;
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -41,8 +40,15 @@
     border: #1d1d1d 0.1rem solid;
     box-shadow: 0px 0px 15px 1px rgba(36, 36, 36, 0.5);
     transition: all ease-in-out 0.2s;
-    z-index: 2;
 }
+
+.city-building-count {
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    font-size: 4rem;
+}
+
 .city-building:not(.city-building-built):hover {
     background-color: #69ba5255;
     border: #313131 0.1rem solid;
@@ -56,56 +62,6 @@
 }
 .city-building img {
     height: 100%;
-}
-.city-building-count {
-    margin-top: auto;
-    margin-bottom: auto;
-    text-align: center;
-    font-size: 4rem;
-}
-.confirm-box{
-    height: 20%;
-    width: inherit;
-    z-index: 1;
-    position: absolute;
-    display: flex;
-    opacity: 0;
-    top: 100%;
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
-    justify-content: center;
-    align-items: center;
-}
-.confirm-box-triggered{
-    opacity: 1;
-    transform: translateY(10%);
-}
-.confirm-box > div{
-    height: 100%;
-    font-weight: 700;
-    color: white;
-}
-.confirm-building-purchase {
-    display: flex;
-    border-radius: 0.5rem 0rem 0rem 0.5rem;
-    background-color: #05790d;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-}
-.exit-building-purchase {
-    display: flex;
-    border-radius: 0rem 0.5rem 0.5rem 0rem;
-    background-color: #790505;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-}
-.confirm-building-purchase:hover {
-    background-color: #06ad12;
-}
-.exit-building-purchase:hover {
-    background-color: #af0808;
 }
 /* Pop out for non city hexes */
 .noncity-popout {
