@@ -42,19 +42,15 @@
     background-color: #152623;
     margin-bottom: calc(var(--m) - var(--s) * 0.2885);
     font-size: 0;
-    font-weight: bold;
-    text-align: center;
-    transition-property: color, background, transform;
-    transition-timing-function: ease-in-out;
-    transition-duration: 0.2s;
-    padding-top: 2rem;
+    border: none;
+    transition: color ease-in-out 0.2s, transform ease-in-out 0.2s;
     position: relative;
 }
 .hex:hover {
     cursor: pointer;
     transform: scale(0.95);
 }
-.hex-space {
+.hex_space {
     width: calc(var(--s) * 0.5);
     margin-right: var(--m);
     display: inline-block;
@@ -96,10 +92,8 @@
     background-position: 50% 40%;
     content: '';
     width: var(--s);
-    margin: var(--m);
     height: calc(var(--s) * 1.1547);
     clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-    display: inline-block;
     position: absolute;
     top: 0;
     left: 0;
@@ -116,10 +110,8 @@
     background-position: 50% 40%;
     content: '';
     width: var(--s);
-    margin: var(--m);
     height: calc(var(--s) * 1.1547);
     clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-    display: inline-block;
     position: absolute;
     top: 0;
     left: 0;
