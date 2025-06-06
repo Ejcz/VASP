@@ -30,7 +30,7 @@ document.querySelector('.acc-icon').style.backgroundImage = "url('" + userData.u
 //------------------------------------------------------------------------------------------------------------------
 
 // Faction descriptions
-import { factionDescriptions } from './variables.js';
+import { factionDescriptions } from '../variables.js';
 
 // Getting game data
 const gameRef = doc(database, 'Games', gameName);
@@ -41,7 +41,7 @@ if (gameDoc.started == true) {
     window.location.href = 'game.html';
 }
 
-import { startGame } from './game-creation.js';
+import { startGame } from '../game-creation.js';
 
 // If all users have chosen a faction, go to game
 if (gameDoc.players.length == gameDoc.nrPlayers) {

@@ -22,7 +22,7 @@ let gameName = localStorage.getItem('game');
 const userData = (await getDoc(doc(database, 'Users', user))).data();
 
 import { adjacent } from '../pre-game/biome-generation.js';
-import { occupiedHexes, current_column, current_row, hex_gen } from './map.js';
+import { occupiedHexes, current_column, current_row, hex_gen } from './map-gen.js';
 let activeHexes = [];
 
 // Function that highlights where a unit can move
@@ -34,7 +34,7 @@ function whereToMove(hex_id) {
 let armyId;
 
 //Moving an army function
-import { clickedHexId, userArmyLocations, hexClickFunction, getCurrentData } from './map.js';
+import { clickedHexId, userArmyLocations, hexClickFunction, getCurrentData } from './map-gen.js';
 import { alertMessage } from './alert.js';
 import { hex_rows } from '../variables.js';
 document.querySelector('.move-army').addEventListener('click', (ev) => {

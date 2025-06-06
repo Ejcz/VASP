@@ -1,4 +1,4 @@
-import { hex_rows, hex_columns } from './variables.js';
+import { hex_rows, hex_columns } from '../variables.js';
 
 const nrRows = hex_rows;
 const nrColumns = hex_columns;

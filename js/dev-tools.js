@@ -63,7 +63,7 @@ window.deleteGame = async (game) => {
 };
 
 //Command for quickly creating a game
-import { startGame } from './game-creation.js';
+import { startGame } from './pre-game/game-creation.js';
 
 window.createGame = async (gameName, listOfPlayers, turnTime) => {
     let correctData = true;
