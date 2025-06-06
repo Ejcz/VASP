@@ -62,11 +62,18 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
+
 //User that is currently playing data
 let userDoc = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
 
 //Whose turn is it?
 import { turnOfPlayer, alertMessage } from './turns.js';
+
+let hex_mark = 'map-view';
+/*The variable which determines what happens when you press a hex tile, by default "map-view"
+ -map-view = allows for opening city popouts and for opening noncity popouts
+ -unit-view = allows to only click some of the squares, for example when moving an army*/
+
 
 //Variables for fetching map data
 let userCitiesLocations = [];
@@ -74,13 +81,17 @@ let enemyCitiesLocations = [];
 let userArmyLocations = [];
 let enemyArmyLocations = [];
 let cities;
+let occupiedHexes = [];
+let knownHexes;
 
-//Variable for allert calls
-const alert = document.querySelector('.alert-box');
+
+//Function that gets the current data of structures and units on the map. It only fetches what you specified in the argument
 
 async function getCurrentData(whatToGet) {
     //Fetching cities data
     if (whatToGet.includes('city')) {
+        userCitiesLocations = [];
+        enemyCitiesLocations = [];
         cities = (await getDoc(doc(database, 'Games', gameName, 'Map', 'Cities'))).data();
         for (const city in cities) {
             if (cities[city].owner == userData.displayName) {
@@ -92,6 +103,8 @@ async function getCurrentData(whatToGet) {
     }
     //Fetching armies data
     if (whatToGet.includes('army')) {
+        userArmyLocations = [];
+        enemyArmyLocations = [];
         const usersDocs = (await getDocs(collection(database, 'Games', gameName, 'UserData'))).docs;
         const armies = usersDocs.map((ele) => ({ armies: ele.data().armies, user: ele.id }));
         armies.forEach((ele) => {
@@ -102,7 +115,13 @@ async function getCurrentData(whatToGet) {
             }
         });
     }
+    occupiedHexes = enemyArmyLocations.concat(userArmyLocations).concat(userCitiesLocations).concat(enemyCitiesLocations);
+    //Fetching known hexes
+    if (whatToGet.includes('discovered')) {
+        knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
+    }
 }
+
 
 await getCurrentData(['city', 'army']);
 
@@ -112,8 +131,13 @@ const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData
     knownHexes = docSnap.data().discoveredHexes;
 });
 
-// Hex rendering function
+export { occupiedHexes, userArmyLocations, getCurrentData };
 
+
+//Gets the current data for the initial map render
+await getCurrentData(['city', 'army', 'discovered']);
+
+// Hex rendering function
 function hex_gen(row, col) {
     map_drag.innerHTML = '';
     for (let i = 0; i < hex_hn; i++) {
@@ -121,6 +145,7 @@ function hex_gen(row, col) {
             let id_x = (((row + i) % hex_rows) + hex_rows) % hex_rows;
             let id_y = (((col + j) % hex_columns) + hex_columns) % hex_columns;
             let nr = id_y + hex_columns * id_x;
+            //Checks which classes should each hex get
             if (knownHexes.includes(nr)) {
                 var known = biomes[nr];
                 if (enemyCitiesLocations.includes(nr)) {
@@ -142,12 +167,11 @@ function hex_gen(row, col) {
                 var isCity = '';
                 var isArmy = '';
             }
-
-            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isCity + isArmy + '" id="' + nr + '">' + nr + '</div>');
+            map_drag.insertAdjacentHTML('beforeend', '<div class="hex ' + known + isCity + isArmy + '" id="' + nr + '"></div>');
         }
         map_drag.insertAdjacentHTML('beforeend', '<br />');
         if (i % 2 == ((current_row % 2) + 2) % 2) {
-            map_drag.insertAdjacentHTML('beforeend', '<div class="hex-space"></div>');
+            map_drag.insertAdjacentHTML('beforeend', '<div class="hex_space"></div>');
         }
     }
     // Hex clicking callout
@@ -161,6 +185,8 @@ function hex_gen(row, col) {
         });
     });
 }
+
+export { hex_gen, current_column, current_row };
 
 // Generating map in the beggining
 hex_gen(current_row, current_column);
@@ -255,8 +281,9 @@ function clear_nav() {
 
 // Hex clicking function
 
-let hex_mark = 'map-view'; //The variable which determines what happens when you press a hex tile, by default "map-view" = open the details of the hex (e.g. city view)
 let clickedHexId;
+export { clickedHexId };
+import { moveArmy } from './units.js';
 function hex_clicked(hex_id, cursorX, cursorY) {
     clickedHexId = hex_id;
     switch (hex_mark) {
@@ -269,8 +296,13 @@ function hex_clicked(hex_id, cursorX, cursorY) {
                     noncity_pop_out_open(cursorX, cursorY);
                 }
             }
+            break;
+        case 'unit-view':
+            moveArmy();
+            break;
     }
 }
+
 
 // Resources statistics
 let resources;
@@ -280,6 +312,15 @@ const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData'
         document.querySelector('.' + r + '-stat').innerHTML = resources[r];
     }
 });
+//Function that changes hex_mark (so that it is exportable)
+export function hexClickFunction(role) {
+    if (role == 'map-view') {
+        hex_mark = 'map-view';
+    } else if (role == 'unit-view') {
+        hex_mark = 'unit-view';
+    }
+}
+
 
 //General pop-out functions
 function city_popout_open(location) {
@@ -329,7 +370,6 @@ function city_popout_close() {
 }
 
 // Nav bar map button clicked
-
 document.querySelector('#map-button').addEventListener('click', () => {
     if (pop_out.classList.contains('pop-out-animation')) {
         city_popout_close();
@@ -352,6 +392,7 @@ document.addEventListener('click', function () {
     // Hides non city popout when clicked anywhere
     nonCityPopout.style.display = 'none';
 });
+
 
 //|-------------------------------------------------------------------------------------------------|
 //|                        Player changing game data - interactions                                 |
@@ -418,6 +459,9 @@ function verifyBuildingTransaction(event, cityName) {
             const confirmButtonHTML = document.querySelector('#' + confirmButtonId);
             const exitButtonHTML = document.querySelector('#' + exitButtonId);
 
+// Building cities
+
+
             confirmButtonHTML.addEventListener('click', function () {
                 if (checkIfCanAfford(buildingId)) {
                     // Builds the building if you can afford it
@@ -444,15 +488,9 @@ function verifyBuildingTransaction(event, cityName) {
 
 // Building cities
 document.querySelector('.build-city').addEventListener('click', async () => {
-    //Checks if an army is occupying this hex
-    if (userArmyLocations.includes(parseInt(clickedHexId)) || enemyArmyLocations.includes(parseInt(clickedHexId))) {
-        alert.innerHTML = 'An army is occupying this hex';
-        alert.style.transitionDuration = '0.3s';
-        alert.classList.add('alert-box-highlight');
-        setTimeout(() => {
-            alert.style.transitionDuration = '2s';
-            alert.classList.remove('alert-box-highlight');
-        }, 1800);
+    //Checks if this hex is occupied
+    if (occupiedHexes.includes(parseInt(clickedHexId))) {
+        alertMessage('An army is occupying this hex');
         //Checks for enough resources and builts the city
     } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
         let known = userDoc;
@@ -489,7 +527,9 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             await getCurrentData(['city']);
         }
     } else {
+
         alertMessage("You don't have enough resources to build a city");
+
     }
     document.querySelector('.noncity-popout').style.display = 'none';
 });
