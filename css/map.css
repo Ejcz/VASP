@@ -101,6 +101,7 @@
 .enemy_city::after {
     background-image: url(../images/evil-buildings.png);
 }
+
 .user_army::after,
 .enemy_army::after {
     background-image: url(../images/army.png);
@@ -119,3 +120,10 @@
 .enemy_army::after {
     background-image: url(../images/evil-army.png);
 }
+
+.stats-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+

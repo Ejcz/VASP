@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion, getDocs, collection } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import { defaultBuildingsCount } from './variables.js';
+import { defaultBuildingsCount, resourceNames, buildingsCollection } from './variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -62,10 +62,18 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
+
+//User that is currently playing data
+let userDoc = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
+
+//Whose turn is it?
+import { turnOfPlayer, alertMessage } from './turns.js';
+
 let hex_mark = 'map-view';
 /*The variable which determines what happens when you press a hex tile, by default "map-view"
  -map-view = allows for opening city popouts and for opening noncity popouts
  -unit-view = allows to only click some of the squares, for example when moving an army*/
+
 
 //Variables for fetching map data
 let userCitiesLocations = [];
@@ -76,7 +84,9 @@ let cities;
 let occupiedHexes = [];
 let knownHexes;
 
+
 //Function that gets the current data of structures and units on the map. It only fetches what you specified in the argument
+
 async function getCurrentData(whatToGet) {
     //Fetching cities data
     if (whatToGet.includes('city')) {
@@ -111,7 +121,18 @@ async function getCurrentData(whatToGet) {
         knownHexes = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data().discoveredHexes;
     }
 }
+
+
+await getCurrentData(['city', 'army']);
+
+// Known hexes data
+let knownHexes = userDoc.discoveredHexes;
+const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
+    knownHexes = docSnap.data().discoveredHexes;
+});
+
 export { occupiedHexes, userArmyLocations, getCurrentData };
+
 
 //Gets the current data for the initial map render
 await getCurrentData(['city', 'army', 'discovered']);
@@ -173,6 +194,23 @@ hex_gen(current_row, current_column);
 map_drag.style.top = `${-2 * hex_height - 4 * hex_margin}px`;
 map_drag.style.left = `${-2 * hex_height - 4 * hex_margin}px`;
 
+//Generating statistics boxes in the beginning
+
+const statsContainer = document.querySelector('.stats-container');
+resourceNames.forEach((material) => {
+    const iconLetter = material.charAt(0).toUpperCase(); //The first letter of the material, will be displayed next to the material quantity
+    const className = material.toLowerCase() + '-stat'; //The name of the class of the statistic icon box
+
+    const statBoxHTML = `
+        <div class= "stat-box" title="${material}">
+            <div class= "stat-icon">${iconLetter}</div>
+            <span class= "${className}"></span>
+        </div>
+    `;
+
+    statsContainer.insertAdjacentHTML('beforeend', statBoxHTML);
+});
+
 // Map dragging:
 function onMouseDrag({ movementX, movementY }) {
     nonCityPopout.style.display = 'none';
@@ -225,15 +263,6 @@ document.querySelector('#log-out-btt').addEventListener('click', (ev) => {
     window.location.href = 'log-in.html';
     localStorage.clear();
 });
-
-// Resources statistics
-let resources;
-const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
-    resources = docSnap.data().resources;
-    for (let r in resources) {
-        document.querySelector('.' + r + '-stat').innerHTML = resources[r];
-    }
-});
 // Navigation bar buttons - animation
 const nav_ref = document.getElementsByClassName('nav-button');
 
@@ -263,7 +292,9 @@ function hex_clicked(hex_id, cursorX, cursorY) {
                 city_popout_open(hex_id);
             } else if (document.getElementById(hex_id).classList.contains('enemy_city')) {
             } else if (!document.getElementById(hex_id).classList.contains('unknown_hex')) {
-                noncity_pop_out_open(cursorX, cursorY);
+                if (userData.displayName == turnOfPlayer) {
+                    noncity_pop_out_open(cursorX, cursorY);
+                }
             }
             break;
         case 'unit-view':
@@ -272,6 +303,15 @@ function hex_clicked(hex_id, cursorX, cursorY) {
     }
 }
 
+
+// Resources statistics
+let resources;
+const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
+    resources = docSnap.data().resources;
+    for (let r in resources) {
+        document.querySelector('.' + r + '-stat').innerHTML = resources[r];
+    }
+});
 //Function that changes hex_mark (so that it is exportable)
 export function hexClickFunction(role) {
     if (role == 'map-view') {
@@ -281,19 +321,38 @@ export function hexClickFunction(role) {
     }
 }
 
+
 //General pop-out functions
 function city_popout_open(location) {
     let city;
+    let nameCity;
     for (const c in cities) {
         if (cities[c].location == location) {
             city = cities[c];
+            nameCity = c;
         }
     }
+
     for (const building in city.buildings) {
-        document.querySelector('.city-grid').insertAdjacentHTML('beforeend', '<div class="city-building" id="' + building + '">' + building + '</div>');
-        if (city.buildings[building] == 1) {
+        document.querySelector('.city-grid').insertAdjacentHTML(
+            'beforeend',
+            `
+            <div class="city-building" id="${building}">
+                <div>${building}</div>
+                <div class="city-building-count" id="${building}-count">${city.buildings[building]}</div>
+            </div>
+            `
+        );
+        if (city.buildings[building] >= 1) {
             document.querySelector('#' + building).classList.add('city-building-built');
         }
+        document.querySelector('#' + building).addEventListener('click', (event) => {
+            if (userData.displayName == turnOfPlayer) {
+                verifyBuildingTransaction(event, nameCity);
+            } else {
+                alertMessage("It's not your turn");
+            }
+        });
     }
     clear_nav();
     pop_out.classList.toggle('pop-out-transition');
@@ -334,16 +393,107 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-// Building cities
-import { alert_display } from './alert.js';
 
+//|-------------------------------------------------------------------------------------------------|
+//|                        Player changing game data - interactions                                 |
+//|-------------------------------------------------------------------------------------------------|
+
+//Function building a building
+
+async function buildABuilding(buildingType, cityName) {
+    //Updating firebase
+
+    const buildingCost = buildingsCollection[buildingType].cost; //Extracts the building cost array
+    for (const r in buildingCost) {
+        resources[r] -= buildingCost[r];
+    } //Loop updating local player reasources
+    await updateDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName), {
+        resources: resources,
+    });
+
+    //Updating local and firebase resources
+    cities[cityName].buildings[buildingType] += 1;
+    await updateDoc(doc(database, 'Games', gameName, 'Map', 'Cities'), {
+        [`${cityName}.buildings.${buildingType}`]: cities[cityName].buildings[buildingType],
+    });
+
+    //Updating user HTML
+    const updatedCity = cities[cityName];
+    const countHTML = document.getElementById(`${buildingType}-count`);
+    countHTML.innerHTML = '';
+    countHTML.innerHTML = `${updatedCity.buildings[buildingType]}`;
+    //Updating building HTML if this is the first time build of that type
+    document.querySelector('#' + buildingType).classList.add('city-building-built');
+}
+
+// Function checking if you can afford to build a certain building
+
+function checkIfCanAfford(buildingType) {
+    const buildingCost = buildingsCollection[buildingType].cost;
+    return Object.entries(buildingCost).every(([materialType, cost]) => resources[materialType] >= cost);
+}
+
+//Pop-out asking you to confirm building transaction
+
+function verifyBuildingTransaction(event, cityName) {
+    const buildingId = event.currentTarget.id;
+    const exitButtonId = `${buildingId}-exit-building-purchase`;
+    if (event.target.id != exitButtonId) {
+        const buildingHTML = document.querySelector('#' + buildingId);
+        const confirmButtonId = `${buildingId}-confirm-building-purchase`;
+        const confirmBoxId = `${buildingId}-confirm-box`;
+        let confirmBoxHTML = document.querySelector('#' + confirmBoxId);
+
+        // Creates the box and event listeners if they don't exist already
+        if (!confirmBoxHTML) {
+            buildingHTML.insertAdjacentHTML(
+                'beforeend',
+                `
+            <div class="confirm-box" id="${confirmBoxId}">
+                <div class="confirm-building-purchase" id="${confirmButtonId}">CONFIRM</div>
+                <div class="exit-building-purchase" id="${exitButtonId}">EXIT</div>
+            </div>
+            `
+            );
+
+            const confirmButtonHTML = document.querySelector('#' + confirmButtonId);
+            const exitButtonHTML = document.querySelector('#' + exitButtonId);
+
+// Building cities
+
+
+            confirmButtonHTML.addEventListener('click', function () {
+                if (checkIfCanAfford(buildingId)) {
+                    // Builds the building if you can afford it
+                    buildABuilding(buildingId, cityName);
+                } else {
+                    const articleInjectionMap = {
+                        singular: 'a ',
+                        plural: '',
+                    };
+                    const buildingArticle = articleInjectionMap[buildingsCollection[buildingId].gramaticalQuantity];
+                    alertMessage(`You don't have enough resources to build ${buildingArticle + buildingId}`);
+                }
+            });
+            exitButtonHTML.addEventListener('click', function () {
+                document.querySelector('#' + confirmBoxId).classList.remove('confirm-box-triggered');
+                document.querySelector('#' + confirmBoxId).remove();
+            });
+
+            confirmBoxHTML = document.querySelector('#' + confirmBoxId);
+            confirmBoxHTML.classList.add('confirm-box-triggered');
+        }
+    }
+}
+
+// Building cities
 document.querySelector('.build-city').addEventListener('click', async () => {
     //Checks if this hex is occupied
     if (occupiedHexes.includes(parseInt(clickedHexId))) {
-        alert_display('An army is occupying this hex');
+        alertMessage('An army is occupying this hex');
         //Checks for enough resources and builts the city
     } else if (resources.wood >= 100 && resources.people >= 20 && resources.metals >= 5) {
-        let known = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
+        let known = userDoc;
         const knownAfter = [...new Set([...known.discoveredHexes, ...adjacent(parseInt(clickedHexId))])];
         const addedHexes = adjacent(parseInt(clickedHexId)).filter((item) => !known.discoveredHexes.includes(item));
         addedHexes.forEach((hex) => {
@@ -377,7 +527,9 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             await getCurrentData(['city']);
         }
     } else {
-        alert_display("You don't have enough resources to build a city");
+
+        alertMessage("You don't have enough resources to build a city");
+
     }
     document.querySelector('.noncity-popout').style.display = 'none';
 });

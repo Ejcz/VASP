@@ -20,29 +20,62 @@ const factionBiome = {
     faction6: 'ocean',
 };
 
-// Default buildings settings
+//Resource names
 
-const buildingsCollection = [
-    {
-        name: 'barracs',
-        initialCount: 0,
-        cost:1
-    },
-    {
-        name: 'school',
-        initialCount: 0,
-        cost:1
-    },
-    {
-        name: 'farm',
-        initialCount: 0,
-        cost:1
-    }
+const resourceNames = [
+    "cash",
+    "food",
+    "people",
+    "wood",
+    "stone",
+    "metals",
+    "rizz",
+    "aura"
 ];
 
-const defaultBuildingsCount = buildingsCollection.reduce((accumulator,currentBuilding) => {
-    accumulator[currentBuilding.name]= currentBuilding.cost;
-    return accumulator;
-}, {});
+// Default buildings settings
 
-export { factionDescriptions, hex_rows, hex_columns, factionBiome, buildingsCollection, defaultBuildingsCount};
+const buildingsCollection = {
+    barracs: {
+        name: 'barracs',
+        gramaticalQuantity: 'plural',
+        initialCount: 0,
+        cost: {
+            wood: 1,
+            stone: 2
+        }
+    },
+    school: {
+        name: 'school',
+        gramaticalQuantity: 'singular',
+        initialCount: 0,
+        cost: {
+            wood: 1,
+            stone: 2
+        }
+    },
+    farm: {
+        name: 'farm',
+        gramaticalQuantity: 'singular',
+        initialCount: 0,
+        cost: {
+            wood:1,
+            stone: 2
+        }
+    }
+};
+
+const defaultBuildingsCount = {}
+for (const building in buildingsCollection) { 
+    defaultBuildingsCount[building]=0;
+};
+
+
+export { 
+    factionDescriptions,
+    hex_rows,
+    hex_columns,
+    factionBiome,
+    buildingsCollection,
+    defaultBuildingsCount,
+    resourceNames};
