@@ -36,6 +36,7 @@ const gameDataSnapshot = onSnapshot(gameRef, async (docSnap) => {
 });
 
 const today = new Date();
+import { alertMessage } from './alert.js';
 
 // If turns passed while everyone was offline, pass this many turns, calculate time left in turn
 let timePassed = (today - turnPassedTime) / 1000;
@@ -112,18 +113,6 @@ document.querySelector('.yes-answer').addEventListener('click', (ev) => {
     document.querySelector('.pass-turn').classList.remove('pass-turn-animation');
 });
 
-//For telling people they're doing something wrong
-const alert = document.querySelector('.alert-box');
-function alertMessage(message) {
-    alert.innerHTML = message;
-    alert.style.transitionDuration = '0.3s';
-    alert.classList.add('alert-box-highlight');
-    setTimeout(() => {
-        alert.style.transitionDuration = '2s';
-        alert.classList.remove('alert-box-highlight');
-    }, 1800);
-}
-
 // Passing the turn function
 async function passTurn(currentPlayer, howManyTimes) {
     let currentPlayerNumber = players.indexOf(currentPlayer);
@@ -136,4 +125,4 @@ async function passTurn(currentPlayer, howManyTimes) {
     });
 }
 
-export { turnOfPlayer, alertMessage };
+export { turnOfPlayer };

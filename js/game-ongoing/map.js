@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, getDoc, onSnapshot, setDoc, updateDoc, arrayUnion, getDocs, collection } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 //Import global variables
-import { defaultBuildingsCount, resourceNames, buildingsCollection } from './variables.js';
+import { defaultBuildingsCount, resourceNames, buildingsCollection } from '../variables.js';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAItcEpeYj3eosPypuPnfSILDqWdnAWWbo',
@@ -41,8 +41,8 @@ document.addEventListener('contextmenu', (event) => {
 });
 
 // Variables for map dragging
-import { hex_rows, hex_columns } from './variables.js';
-import { adjacent } from './biome-generation.js';
+import { hex_rows, hex_columns } from '../variables.js';
+import { adjacent } from '../pre-game/biome-generation.js';
 
 var current_row = 0;
 var current_column = 0;
@@ -62,18 +62,17 @@ const map_width = parseFloat(window.getComputedStyle(map_supp).width);
 const hex_wn = Math.ceil(map_width / (hex_width + 2 * hex_margin)) + 3;
 const hex_hn = Math.ceil((map_height - hex_height / 4) / (2 * hex_margin + 0.75 * hex_height)) + 3;
 
-
 //User that is currently playing data
 let userDoc = (await getDoc(doc(database, 'Games', gameName, 'UserData', userData.displayName))).data();
 
 //Whose turn is it?
-import { turnOfPlayer, alertMessage } from './turns.js';
+import { turnOfPlayer } from './turns.js';
+import { alertMessage } from './alert.js';
 
 let hex_mark = 'map-view';
 /*The variable which determines what happens when you press a hex tile, by default "map-view"
  -map-view = allows for opening city popouts and for opening noncity popouts
  -unit-view = allows to only click some of the squares, for example when moving an army*/
-
 
 //Variables for fetching map data
 let userCitiesLocations = [];
@@ -83,7 +82,6 @@ let enemyArmyLocations = [];
 let cities;
 let occupiedHexes = [];
 let knownHexes;
-
 
 //Function that gets the current data of structures and units on the map. It only fetches what you specified in the argument
 
@@ -122,17 +120,14 @@ async function getCurrentData(whatToGet) {
     }
 }
 
-
 await getCurrentData(['city', 'army']);
 
 // Known hexes data
-let knownHexes = userDoc.discoveredHexes;
 const knownHexesSnapshot = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
     knownHexes = docSnap.data().discoveredHexes;
 });
 
 export { occupiedHexes, userArmyLocations, getCurrentData };
-
 
 //Gets the current data for the initial map render
 await getCurrentData(['city', 'army', 'discovered']);
@@ -303,7 +298,6 @@ function hex_clicked(hex_id, cursorX, cursorY) {
     }
 }
 
-
 // Resources statistics
 let resources;
 const resourcesListener = onSnapshot(doc(database, 'Games', gameName, 'UserData', userData.displayName), async (docSnap) => {
@@ -320,7 +314,6 @@ export function hexClickFunction(role) {
         hex_mark = 'unit-view';
     }
 }
-
 
 //General pop-out functions
 function city_popout_open(location) {
@@ -393,7 +386,6 @@ document.addEventListener('click', function () {
     nonCityPopout.style.display = 'none';
 });
 
-
 //|-------------------------------------------------------------------------------------------------|
 //|                        Player changing game data - interactions                                 |
 //|-------------------------------------------------------------------------------------------------|
@@ -459,8 +451,7 @@ function verifyBuildingTransaction(event, cityName) {
             const confirmButtonHTML = document.querySelector('#' + confirmButtonId);
             const exitButtonHTML = document.querySelector('#' + exitButtonId);
 
-// Building cities
-
+            // Building cities
 
             confirmButtonHTML.addEventListener('click', function () {
                 if (checkIfCanAfford(buildingId)) {
@@ -527,9 +518,7 @@ document.querySelector('.build-city').addEventListener('click', async () => {
             await getCurrentData(['city']);
         }
     } else {
-
         alertMessage("You don't have enough resources to build a city");
-
     }
     document.querySelector('.noncity-popout').style.display = 'none';
 });

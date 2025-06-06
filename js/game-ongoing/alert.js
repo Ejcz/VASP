@@ -1,6 +1,7 @@
+//For telling people they're doing something wrong
 const alert = document.querySelector('.alert-box');
-export function alert_display(text) {
-    alert.innerHTML = text;
+export function alertMessage(message) {
+    alert.innerHTML = message;
     alert.style.transitionDuration = '0.3s';
     alert.classList.add('alert-box-highlight');
     setTimeout(() => {

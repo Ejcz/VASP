@@ -21,7 +21,7 @@ let gameName = localStorage.getItem('game');
 // Get user's data
 const userData = (await getDoc(doc(database, 'Users', user))).data();
 
-import { adjacent } from './biome-generation.js';
+import { adjacent } from '../pre-game/biome-generation.js';
 import { occupiedHexes, current_column, current_row, hex_gen } from './map.js';
 let activeHexes = [];
 
@@ -35,8 +35,8 @@ let armyId;
 
 //Moving an army function
 import { clickedHexId, userArmyLocations, hexClickFunction, getCurrentData } from './map.js';
-import { alert_display } from './alert.js';
-import { hex_rows } from './variables.js';
+import { alertMessage } from './alert.js';
+import { hex_rows } from '../variables.js';
 document.querySelector('.move-army').addEventListener('click', (ev) => {
     if (userArmyLocations.includes(parseInt(clickedHexId))) {
         hexClickFunction('unit-view');
